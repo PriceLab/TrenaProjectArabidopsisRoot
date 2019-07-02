@@ -1,0 +1,56 @@
+*---------------------------------------------------------------------------------------------------------------------------
+* characterizing the samples in the mtx.zinc.21201x42.RData data set (pshannon: 2 jul 2019)
+
+  paper: https://www.sciencedirect.com/science/article/pii/S2213596016300216#f0005
+  42 hybridizations
+  12 experimental conditions: [Zn- Zn+ Zn++][wildtype bzip19:bzip23ko][root shoot]
+
+  Thus, it expands from 8 to 42 microarrays hybridizations, which have been deposited at the Gene
+  Expression Omnibus (GEO) under the accession number GSE77286.
+
+  cd ~/github/TrenaProjectArabidopsisRoot/prep/munoz-zinc/
+  load("mtx.zinc.21201x42.RData")
+  colnames(mtx)
+  GPL198	[ATH1-121501] Affymetrix Arabidopsis ATH1 Genome Array
+    GSM2047275	Root, WT, Zn-, Rep1
+    GSM2047276	Root, WT, Zn-, Rep2
+    GSM2047277	Root, WT, Zn- ,Rep3
+    GSM2047278	Root, WT, Zn-, Rep4
+    GSM2047279	Root, Mut, Zn-, Rep1
+    GSM2047280	Root, Mut, Zn-, Rep2
+    GSM2047281	Root, Mut, Zn-, Rep3
+    GSM2047282	Root, Mut, Zn-, Rep4
+    GSM2047283	Root, Wt, Zn+, Rep1
+    GSM2047284	Root, Wt, Zn+, Rep2
+    GSM2047285	Root, Wt, Zn+, Rep3
+    GSM2047286	Root, Wt, Zn+, Rep4
+    GSM2047287	Root, Mut, Zn+, Rep1
+    GSM2047288	Root, Mut, Zn+, Rep2
+    GSM2047289	Root, Mut, Zn+, Rep3
+    GSM2047290	Root, Mut, Zn+, Rep4
+    GSM2047291	Root, WT, Zn++, Rep1
+    GSM2047292	Root, WT, Zn++, Rep2
+    GSM2047293	Root, WT, Zn++, Rep3
+    GSM2047294	Root, WT, Zn++, Rep4
+    GSM2047295	Root, Mut, Zn++, Rep1
+    GSM2047296	Root, Mut, Zn++, Rep2
+    GSM2047297	Root, Mut, Zn++, Rep3
+    GSM2047298	Root, Mut, Zn++, Rep4
+    GSM2047299	Shoot, WT, Zn-, Rep1
+    GSM2047300	Shoot, WT, Zn-, Rep2
+    GSM2047301	Shoot, WT, Zn-, Rep3
+    GSM2047302	Shoot, Mut, Zn-, Rep1
+    GSM2047303	Shoot, Mut, Zn-, Rep2
+    GSM2047304	Shoot, Mut, Zn-, Rep3
+    GSM2047305	Shoot, WT, Zn+, Rep1
+    GSM2047306	Shoot, WT, Zn+, Rep2
+    GSM2047307	Shoot, WT, Zn+, Rep3
+    GSM2047308	Shoot, Mut, Zn+, Rep1
+    GSM2047309	Shoot, Mut, Zn+, Rep2
+    GSM2047310	Shoot, Mut, Zn+, Rep3
+    GSM2047311	Shoot, WT, Zn++, Rep1
+    GSM2047312	Shoot, WT, Zn++, Rep2
+    GSM2047313	Shoot, WT, Zn++, Rep3
+    GSM2047314	Shoot, Mut, Zn++, Rep1
+    GSM2047315	Shoot, Mut, Zn++, Rep2
+    GSM2047316	Shoot, Mut, Zn++, Rep3
