@@ -57,7 +57,9 @@ displayBedTrack <- function(geneSymbol, shoulder=10000)
       displayTrack(igv, track)
       } # for i
 
-
+   printf <- function(...)print(noquote(sprintf(...)))
+   printf("IREG1")
+   displayBedTrack("IREG1")
 } # displayBedTrack
 #------------------------------------------------------------------------------------------------------------------------
 # displayBedTrack("IREG1")
