@@ -24,5 +24,38 @@ plot(frd3.vector)   # different pattern from wbc19?
   #   2) tf and targetGene are strongly correlated, or strongly anti-correlated in expression
   # the first step in this is to identify arabidopsis transcription factor genes
   # geneontology is a good approach.  read up!  https://en.wikipedia.org/wiki/Gene_ontology
-  # and then look at this:  https://www.ebi.ac.uk/QuickGO/term/GO:0003700
+# and then look at this:  https://www.ebi.ac.uk/QuickGO/term/GO:0003700
 
+# plot WBC19 expression - and this time use covariate data to color the points
+tbl.cov <- read.table("experimentalVariables.tsv", sep="\t", header=TRUE, as.is=TRUE)
+
+# plot all samples with the same color, same solid dot
+plot(wbc19.vector, main="WBC19 expression", col="red", pch=16)
+
+# remember the covariate column names in preparation coloring by zinc treatment: -, +, ++
+head(tbl.cov)
+zincTreatmentColor <- rep("black", nrow(tbl.cov))
+zinc.plus <- which(tbl.cov$zinc == "+")
+zinc.plus.plus <- which(tbl.cov$zinc == "++")
+zincTreatmentColor[zinc.plus] <- "pink"
+zincTreatmentColor[zinc.plus.plus] <- "red"
+plot(wbc19.vector, main="WBC19 expression", pch=16, col=zincTreatmentColor)
+
+# now color by Root/Shoot tissue differences
+tissueColor <- rep("black", nrow(tbl.cov))
+tissue.root <- which(tbl.cov$tissue == "Root")
+tissue.shoot <- which(tbl.cov$tissue == "Shoot")
+tissueColor[tissue.root] <- "brown"
+tissueColor[tissue.shoot] <- "#2E8925"
+plot(wbc19.vector, main="WBC19 expression", pch=16, col=tissueColor)
+
+# what pch (point character) values are available?
+max <- 25
+plot(1:max, pch=1:max)
+
+# set shape to either  16 (solid dot) or 7 (an x in a rectangle)
+genetics.shape <- rep(16, nrow(tbl.cov))
+mutants <- which(tbl.cov$genetics == "Mut")
+genetics.shape[mutants] <- 7
+
+plot(wbc19.vector, main="WBC19 expression", col=tissueColor, pch=genetics.shape)
