@@ -32,7 +32,7 @@ tbl.cov <- read.table("experimentalVariables.tsv", sep="\t", header=TRUE, as.is=
 # plot all samples with the same color, same solid dot
 plot(wbc19.vector, main="WBC19 expression", col="red", pch=16)
 
-# remember the covariate column names in preparation coloring by zinc treatment: -, +, ++
+# recall the covariate column names in preparation for coloring by zinc treatment: -, +, ++
 head(tbl.cov)
 zincTreatmentColor <- rep("black", nrow(tbl.cov))
 zinc.plus <- which(tbl.cov$zinc == "+")
