@@ -1,1 +1,30 @@
 # terminology.txt
+ChIP-seq
+ATAC-seq
+RNA-seq
+microarray (how is it different from RNA-seq?)
+transposase (as in Assay for Transposase-Accessible Chromatin)
+chromatin
+nucleosome
+histone
+histone methyltransferase (!)
+gene expression
+gene regulation
+transcription factor (a class of proteins)
+promoter
+enhancer
+mRNA
+TSS
+5’ 
+3’
+FIMO
+motif
+pwm
+pValue
+pearsson and spearman correlation
+lasso
+random forest
+SQL
+dimer
+homodimer
+heterodimer
