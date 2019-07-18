@@ -1,7 +1,8 @@
 library(RUnit)
 #----------------------------------------------------------------------------------------------------
 if(!exists("tbl.test")){
-    tbl.test <- tbl.sorted.nodupe.10by10
+  print("fresh load of our data file")
+    tbl.test <- get(load(file= "10by10rootTable.RData"))
     }
 #----------------------------------------------------------------------------------------------------
 runTests <- function()
@@ -10,8 +11,6 @@ runTests <- function()
 
 } # runTests
 #----------------------------------------------------------------------------------------------------
-tbl <- tbl.sorted.nodupe.10by10[10,]
-df <- tbl 
 splitMultipleNamesIntoTheirOwnRows <- function(tbl)
 {
   stopifnot(nrow(tbl) == 1)    # we only handle data.frames with one row
@@ -21,7 +20,7 @@ splitMultipleNamesIntoTheirOwnRows <- function(tbl)
      }
 
   tokens <- strsplit(rownames(tbl), ";")[[1]]
-  df[rep(seq_len(nrow(df)), each=length(tokens)),]
+  tbl[rep(seq_len(nrow(tbl)), each=length(tokens)),]
   
   
   if(length(tokens) == 2)
@@ -41,6 +40,18 @@ splitMultipleNamesIntoTheirOwnRows <- function(tbl)
 
 } # splitMultipleNamesIntoTheirOwnRows
 #----------------------------------------------------------------------------------------------------
+NEWsplitMultipleNamesIntoTheirOwnRows <- function(tbl)
+{
+  stopifnot(nrow(tbl) == 1)    # we only handle data.frames with one row
+  
+  tokens <- strsplit(rownames(tbl), ";")[[1]]
+  tbl.result <- tbl[rep(seq_len(nrow(tbl)), each=length(tokens)),]
+  rownames(tbl.result) <- tokens
+  
+  return(tbl.result)
+   
+} # NEWsplitMultipleNamesIntoTheirOwnRows
+#----------------------------------------------------------------------------------------------------
 test_splitMultipleNamesIntoTheirOwnRows <- function()
 {
   message(sprintf("--- test_splitMultipleNamesIntoTheirOwnRows"))   # announce what test you are running
@@ -50,30 +61,41 @@ test_splitMultipleNamesIntoTheirOwnRows <- function()
      #------------------------------------------------------------------------
 
   tbl.1 <- tbl.test[1,]
-  tbl.fixed <- splitMultipleNamesIntoTheirOwnRows(tbl.1)
+  tbl.fixed <- NEWsplitMultipleNamesIntoTheirOwnRows(tbl.1)
   checkEquals(nrow(tbl.fixed), 1)
   checkEquals(rownames(tbl.fixed), rownames(tbl.1))
 
   tbl.2 <- tbl.test[10,]
-  tbl.fixed <- splitMultipleNamesIntoTheirOwnRows(tbl.2)
+  tbl.fixed <- NEWsplitMultipleNamesIntoTheirOwnRows(tbl.2)
   checkEquals(nrow(tbl.fixed), 2)
   checkEquals(rownames(tbl.fixed),c("ATMG01250", "AT2G07697"))
   
   tbl.3 <- tbl.1
   rownames(tbl.3) <- "aaa;bbb;ccc"
-  tbl.fixed <- splitMultipleNamesIntoTheirOwnRows(tbl.3)
+  tbl.fixed <- NEWsplitMultipleNamesIntoTheirOwnRows(tbl.3)
   checkEquals(nrow(tbl.fixed), 3)
   checkEquals(rownames(tbl.fixed),c("aaa", "bbb", "ccc"))
   
   tbl.4 <- tbl.1
   rownames(tbl.4) <- "abc;def;ghi;jkl"
-  tbl.fixed <- splitMultipleNamesIntoTheirOwnRows(tbl.4)
+  tbl.fixed <- NEWsplitMultipleNamesIntoTheirOwnRows(tbl.4)
   checkEquals(nrow(tbl.fixed), 4)
   checkEquals(rownames(tbl.fixed),c("abc", "def", "ghi", "jkl"))
   
 
   
 } # test_splitMultiple
+#----------------------------------------------------------------------------------------------------
+test_splitMultiple <- function() 
+{  
+  message(sprintf("--- test_splitMultiple"))   # announce what test you are running
+  browser()
+  tbl.5 <- tbl.test[8:10,]
+  rownames(tbl.5) <- c("ATMG01290", "ATMG01280;AT2G07695", "ATMG01250;AT2G07697")
+  tbl.fixed <- test_splitMultiple(tbl.5)
+  checkEquals(nrow(tbl.fixed), 5)
+  checkEquals(rownames(tbl.fixed), rownames(tbl.5))
+} 
 #----------------------------------------------------------------------------------------------------
 if(!interactive())
    runTests()
