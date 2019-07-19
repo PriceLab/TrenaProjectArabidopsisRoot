@@ -11,7 +11,7 @@ runTests <- function()
 
 } # runTests
 #----------------------------------------------------------------------------------------------------
-splitMultipleNamesIntoTheirOwnRows <- function(tbl)
+obsolete.splitMultipleNamesIntoTheirOwnRows <- function(tbl)
 {
   stopifnot(nrow(tbl) == 1)    # we only handle data.frames with one row
   
@@ -38,21 +38,20 @@ splitMultipleNamesIntoTheirOwnRows <- function(tbl)
   # your code to split the rowname, and duplicate the row values, building
   # up new data.frame, of two or more rows,  will happen here
 
-} # splitMultipleNamesIntoTheirOwnRows
+} # obsolete.splitMultipleNamesIntoTheirOwnRows
 #----------------------------------------------------------------------------------------------------
-NEWsplitMultipleNamesIntoTheirOwnRows <- function(tbl)
+splitMultipleNames <- function(tbl)
 {
   stopifnot(nrow(tbl) == 1)    # we only handle data.frames with one row
-  
   tokens <- strsplit(rownames(tbl), ";")[[1]]
   tbl.result <- tbl[rep(seq_len(nrow(tbl)), each=length(tokens)),]
   rownames(tbl.result) <- tokens
   
   return(tbl.result)
-   
-} # NEWsplitMultipleNamesIntoTheirOwnRows
+
+} # splitMultipleNames
 #----------------------------------------------------------------------------------------------------
-test_splitMultipleNamesIntoTheirOwnRows <- function()
+test_splitMultipleNames <- function()
 {
   message(sprintf("--- test_splitMultipleNamesIntoTheirOwnRows"))   # announce what test you are running
 
@@ -61,38 +60,35 @@ test_splitMultipleNamesIntoTheirOwnRows <- function()
      #------------------------------------------------------------------------
 
   tbl.1 <- tbl.test[1,]
-  tbl.fixed <- NEWsplitMultipleNamesIntoTheirOwnRows(tbl.1)
+  tbl.fixed <- splitMultipleNames(tbl.1)
   checkEquals(nrow(tbl.fixed), 1)
   checkEquals(rownames(tbl.fixed), rownames(tbl.1))
 
   tbl.2 <- tbl.test[10,]
-  tbl.fixed <- NEWsplitMultipleNamesIntoTheirOwnRows(tbl.2)
+  tbl.fixed <- splitMultipleNames(tbl.2)
   checkEquals(nrow(tbl.fixed), 2)
   checkEquals(rownames(tbl.fixed),c("ATMG01250", "AT2G07697"))
   
   tbl.3 <- tbl.1
   rownames(tbl.3) <- "aaa;bbb;ccc"
-  tbl.fixed <- NEWsplitMultipleNamesIntoTheirOwnRows(tbl.3)
+  tbl.fixed <- splitMultipleNames(tbl.3)
   checkEquals(nrow(tbl.fixed), 3)
   checkEquals(rownames(tbl.fixed),c("aaa", "bbb", "ccc"))
   
   tbl.4 <- tbl.1
   rownames(tbl.4) <- "abc;def;ghi;jkl"
-  tbl.fixed <- NEWsplitMultipleNamesIntoTheirOwnRows(tbl.4)
+  tbl.fixed <- splitMultipleNames(tbl.4)
   checkEquals(nrow(tbl.fixed), 4)
   checkEquals(rownames(tbl.fixed),c("abc", "def", "ghi", "jkl"))
   
-
-  
 } # test_splitMultiple
 #----------------------------------------------------------------------------------------------------
-test_splitMultiple <- function() 
+test_MultiRowTableSplitMultipleNames <- function() 
 {  
   message(sprintf("--- test_splitMultiple"))   # announce what test you are running
-  browser()
-  tbl.5 <- tbl.test[8:10,]
-  rownames(tbl.5) <- c("ATMG01290", "ATMG01280;AT2G07695", "ATMG01250;AT2G07697")
-  tbl.fixed <- test_splitMultiple(tbl.5)
+  
+  tbl.5 <- tbl.test[8,]
+  tbl.fixed <- splitMultipleNames(tbl.5)
   checkEquals(nrow(tbl.fixed), 5)
   checkEquals(rownames(tbl.fixed), rownames(tbl.5))
 } 
