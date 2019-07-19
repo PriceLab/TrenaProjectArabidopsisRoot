@@ -7,7 +7,8 @@ if(!exists("tbl.test")){
 #----------------------------------------------------------------------------------------------------
 runTests <- function()
 {
-  test_splitMultipleNamesIntoTheirOwnRows()
+  test_obsoleteSplitMultipleNames()
+  test_splitMultipleNames()
 
 } # runTests
 #----------------------------------------------------------------------------------------------------
@@ -51,9 +52,20 @@ splitMultipleNames <- function(tbl)
 
 } # splitMultipleNames
 #----------------------------------------------------------------------------------------------------
-test_splitMultipleNames <- function()
+
+splitMultiNamesWithMultiRows <- function(tbl.test)
 {
-  message(sprintf("--- test_splitMultipleNamesIntoTheirOwnRows"))   # announce what test you are running
+  stopifnot(nrow(tbl.test) > 1)
+  orfNames <- strsplit(rownames(tbl.test), ";")[[10]] #how do I read 1-10 rather than just line 10?
+  tbl.results <- tbl.test[rep(seq_len(nrow(tbl.test)), each=length(orfNames)),] # fix line 59 first, then come back to edit this
+  rownames(tbl.results) <- orfNames #this should be fine once lines 59-60 runs correctly
+  
+  return(tbl.results)
+}  #splitMultiNamesWithMultiRows
+#----------------------------------------------------------------------------------------------------
+test_obsoleteSplitMultipleNames <- function()
+{
+  message(sprintf("--- test_obsoleteSplitMultipleNames"))   # announce what test you are running
 
      #------------------------------------------------------------------------
      #  do the simplest test first: a row with a simple name (no semicolons)
@@ -81,17 +93,24 @@ test_splitMultipleNames <- function()
   checkEquals(nrow(tbl.fixed), 4)
   checkEquals(rownames(tbl.fixed),c("abc", "def", "ghi", "jkl"))
   
-} # test_splitMultiple
+} # test_obsoleteSplitMultipleNames
 #----------------------------------------------------------------------------------------------------
-test_MultiRowTableSplitMultipleNames <- function() 
+test_splitMultipleNames <- function() 
 {  
-  message(sprintf("--- test_splitMultiple"))   # announce what test you are running
+  message(sprintf("--- test_splitMultipleNames"))   # announce what test you are running
   
-  tbl.5 <- tbl.test[8,]
+  tbl.5 <- tbl.test[10,]
   tbl.fixed <- splitMultipleNames(tbl.5)
-  checkEquals(nrow(tbl.fixed), 5)
-  checkEquals(rownames(tbl.fixed), rownames(tbl.5))
-} 
+  checkEquals(nrow(tbl.fixed), 2)
+  checkEquals(rownames(tbl.fixed), c("ATMG01250","AT2G07697"))
+} #test_splitMultipleNames
+#----------------------------------------------------------------------------------------------------
+test_splitMultiNamesWithMultiRows <- function()
+{
+  message(sprintf("---test_splitMultipleNames")) # announce what test you are running
+  
+  
+}  #test_splitMultiNamesWithMultiRows
 #----------------------------------------------------------------------------------------------------
 if(!interactive())
    runTests()
