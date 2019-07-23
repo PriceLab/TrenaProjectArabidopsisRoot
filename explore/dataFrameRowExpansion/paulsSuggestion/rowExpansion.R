@@ -9,6 +9,7 @@ runTests <- function()
 {
   test_obsoleteSplitMultipleNames()
   test_splitMultipleNames()
+  test_demo.doAllRows()
 
 } # runTests
 #----------------------------------------------------------------------------------------------------
@@ -49,17 +50,6 @@ splitMultipleNames <- function(tbl)
   return(tbl.result)
 
 } # splitMultipleNames
-#----------------------------------------------------------------------------------------------------
-splitMultiNamesWithMultiRows <- function(tbl.test)
-{
-  stopifnot(nrow(tbl.test) > 1)
-  orfNames <- strsplit(rownames(tbl.test), ";")[[10]] #how do I read 1-10 rather than just line 10?
-  tbl.results <- tbl.test[rep(seq_len(nrow(tbl.test)), each=length(orfNames)),] # fix line 59 first, then come back to edit this
-  rownames(tbl.results) <- orfNames #this should be fine once lines 59-60 runs correctly
-
-  return(tbl.results)
-
-}  # splitMultiNamesWithMultiRows
 #----------------------------------------------------------------------------------------------------
 test_obsoleteSplitMultipleNames <- function()
 {
@@ -104,13 +94,6 @@ test_splitMultipleNames <- function()
 
 } #test_splitMultipleNames
 #----------------------------------------------------------------------------------------------------
-test_splitMultiNamesWithMultiRows <- function()
-{
-  message(sprintf("---test_splitMultipleNames")) # announce what test you are running
-
-
-}  #test_splitMultiNamesWithMultiRows
-#----------------------------------------------------------------------------------------------------
 demo.doAllRows <- function(tbl)
 {
    tbl <- get(load("10by10rootTable.RData"))
@@ -122,7 +105,7 @@ demo.doAllRows <- function(tbl)
 #------------------------------------------------------------------------------------------------------------------------
 test_demo.doAllRows <- function()
 {
-   message(sprintf("--- test_demo.doAllRows"))
+   message(sprintf("---test_demo.doAllRows")) #announce what you're running
    tbl.expanded <- demo.doAllRows(tbl.test)
 
    checkTrue(nrow(tbl.expanded) > nrow(tbl.test))
@@ -137,3 +120,4 @@ test_demo.doAllRows <- function()
 #------------------------------------------------------------------------------------------------------------------------
 if(!interactive())
    runTests()
+
