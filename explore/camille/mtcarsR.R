@@ -33,9 +33,15 @@ summary(model.carb)$r.squared # [1] 0.3035184
 library(RUnit)
 
 #function for r squared values (mpg vs one predictor)
-model <- function(x)
-{model.x <-lm(formula = mpg ~ x, data=mtcars)
-summary(model.x)$r.squared}
+#----------------------------------------------------------------------------------------------------
+model <- function(target, predictors)
+{
+   model.x <- lm(formula = mtcars[[target]] ~ mtcars[[predictor]])
+   model.x <-lm(formula = mpg ~ x, data=mtcars)
+   summary(model.x)$r.squared
+}
+#----------------------------------------------------------------------------------------------------
+
 
 #test model function
 test_model <- function(){
@@ -44,7 +50,7 @@ test_model <- function(){
   model.qsec1 <- lm(formula = mpg ~ qsec, data=mtcars)
   checkEquals(model(qsec),summary(model.qsec1)$r.squared)
 }
-  
+
 #function for r squared values (mpg vs two predictors)
 model1 <- function(x,y)
 {model.b <-lm(formula = mpg ~ x + y, data=mtcars)
@@ -68,7 +74,7 @@ par(las=2,mar=c(4,4,2,1))
 with(r_squared_data_frame, barplot(rSquared, names.arg = names(r.squared), main = "R Squared Values", xlab = "Predictors", ylab = "R-Squared"))
 
 #model repeated for each predictor
-for(i in 2:11) 
+for(i in 2:11)
 {
   b <- as.numeric(mtcars[,i])
   model(b)
