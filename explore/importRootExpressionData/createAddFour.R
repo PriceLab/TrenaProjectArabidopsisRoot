@@ -1,6 +1,7 @@
+library(RUnit)
+
 addFour <- function(d)
 {
-  d <- 3
   stopifnot(class(d)== "numeric")
   sum <- d + 4
   return(sum)
@@ -14,16 +15,16 @@ runTests <- function()
   
 } # runTests
 #----------------------------------------------------------------------------------------------------
-test_addFour <- function()
+test_addFour <- function(d)
 {
   message(sprintf("--- test_addFour"))
   
-  sum <- addFour(d)
-  checkTrue(sum > d)
-  checkEquals(sum, d + 4)
-  checkTrue(class(sum)== "numeric")
+  checkTrue(addFour(28) > 28)
+  checkEquals(addFour(28), 32)
+  checkTrue(class(addFour(28))== "numeric")
   
 } # test_createTestMatrix
 #----------------------------------------------------------------------------------------------------
 if(!interactive())
   runTests()
+
