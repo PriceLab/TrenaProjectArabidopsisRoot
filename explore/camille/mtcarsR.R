@@ -29,104 +29,79 @@ summary(model.gear)$r.squared # [1] 0.2306734
 model.carb <- lm(formula = mpg ~ carb, data=mtcars)
 summary(model.carb)$r.squared # [1] 0.3035184
 
-#loading RUnit package
 library(RUnit)
 
-#testing all
-#-------------------------------------------------------------------------------
-run_tests <- function()
-{
-  test_model()
-  test_model1()
-}
-
-#-------------------------------------------------------------------------------
-
-#function for r squared values (mpg vs one predictor)
 #----------------------------------------------------------------------------------------------------
-model <- function(target, predictor) #input with quotes
+one_predictor_rsquared <- function(target, predictor) #input with quotes
 {
    model.x <- lm(formula = mtcars[[target]] ~ mtcars[[predictor]])
    summary(model.x)$r.squared
-}
-#----------------------------------------------------------------------------------------------------
-test_model <- function()
-{
-  model.cyl1 <- lm(formula = mtcars$mpg ~ mtcars$cyl)
-  checkEquals(model("mpg", "cyl"),summary(model.cyl1)$r.squared)
-  model.qsec1 <- lm(formula = mtcars$mpg ~ mtcars$qsec)
-  checkEquals(model("mpg", "qsec"),summary(model.qsec1)$r.squared)
-}
-#------------------------------------------------------------------------
-
-
-#function for r squared values (mpg vs two predictors)
+}#function for r squared values (mpg vs one predictor)
 #--------------------------------------------------------------------------
-model1 <- function(target, predictor1, predictor2) #input with quotes
+two_predictors_rsquared <- function(target, predictor1, predictor2) #input with quotes
 {
   model.b <-lm(formula = mtcars[[target]] ~ 
                  mtcars[[predictor1]] + mtcars[[predictor2]])
   summary(model.b)$r.squared
-}
-#---------------------------------------------------------------------------
-test_model1 <- function()
+}#function for r squared values (mpg vs two predictors)
+#--------------------------------------------------------------------------
+two_predictors_rsquared_2 <- function(target, vector) #input with quotes
 {
-  model.cylwt <- lm(formula = mtcars$mpg ~ mtcars$cyl + mtcars$wt)
-  checkEquals(model1("mpg", "cyl", "wt"),summary(model.cylwt)$r.squared)
-  model.hpam <- lm(formula = mtcars$mpg ~ mtcars$hp + mtcars$am)
-  checkEquals(model1("mpg","hp", "am"),summary(model.hpam)$r.squared)
-}
-#----------------------------------------------------------------------
-
-
-#makes data frame of r squared values
+  model.b <-lm(formula = mtcars[[target]] ~ 
+                 mtcars[[predictor1]] + mtcars[[predictor2]])
+  summary(model.b)$r.squared
+}#two_predictors_rsquared_2
 #------------------------------------------------------------------------
 r.squared <- c(0.72618,0.7183433,0.6024373,0.4639952,0.7528328,0.1752963,0.4409477,0.3597989,0.2306734,0.3035184)
 names(r.squared) <- c("cyl","disp","hp","drat","wt","qsec","vs","am","gear","carb")
 r_squared_data_frame <- data.frame(rSquared = r.squared)
-#-------------------------------------------------------------------------
-
-#uses data frame to make bar graph
+#makes data frame of r squared values
 #--------------------------------------------------------------------------
+histogram_rsquared <- function()
+{
 par(las=2,mar=c(4,4,2,1))
 with(r_squared_data_frame, barplot(rSquared, names.arg = names(r.squared), main = "R Squared Values", xlab = "Predictors", ylab = "R-Squared"))
-#------------------------------------------------------------------------
-
-#model repeated for each predictor
+}#uses data frame to make bar graph
 #---------------------------------------------------------------------------
 for(i in 2:11)
 {
   model.x <- lm(formula = mtcars$mpg ~ mtcars[[i]])
   print(summary(model.x)$r.squared)
-}
-#-----------------------------------------------------------------------------
-
-#model for residuals with multiple predictors
+}#r squared calculation repeated for each predictor
 #----------------------------------------------------------------------------
-model2 <- function(target, predictor1, predictor2) #input with quotes
+two_predictors_residuals <- function(target, predictor1, predictor2) #input with quotes
 {
   model.n <-lm(formula = mtcars[[target]] ~ 
                  mtcars[[predictor1]] + mtcars[[predictor2]])
   summary(model.n)$residuals
-}
+}#model for residuals with multiple predictors
 #----------------------------------------------------------------------------
+vector.b <- c()
 
-
-#model1 for each combo of 2 predictors
-#----------------------------------------------------------------------------
+rsquared <- function()
+{
 for(i in 2:11)
 {
   for(c in 2:11)
   {
     model.b <-lm(formula = mtcars$mpg ~ 
                    mtcars[[i]] + mtcars[[c]])
-    print(i)
-    print(c)
+    vector.b <- c(vector.b, i)
+    #print(i)
+    #print(c)
     print(summary(model.b)$r.squared)
   }
 }
+}
+data_frame_rsquared <- data.frame(predictor1 = vector.b, 
+                                  predictor2 = colnames(mtcars[,-1]), 
+                                  rSquared = summary(model.b)$r.squared)
+#r squared calculated for each combo of 2 predictors
 #----------------------------------------------------------------------------
 
+
+#data_frame_rsquared <- data.frame(predictor1 = i, predictor2 = c, 
+#rSquared = summary(model.b)$r.squared)
 
 #barplot(r.squared, main = "R Squared Values", xlab = "Predictors", ylab = "R-Squared")
 #works using vector instead of data frame to make bar graph
