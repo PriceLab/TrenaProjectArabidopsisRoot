@@ -2,35 +2,42 @@ library(RUnit)
 #----------------------------------------------------------------------------------------------------
 runTests <- function()
 {
-   test_identifyMultiOrfNames()
+   test_splitNames()
    
 } # runTests
 #----------------------------------------------------------------------------------------------------
-# create function identifyMultiOrfNames
-identifyMultiOrfNames <- function(tbl)
+# create function splitNames
+splitNames <- function(string)
 {
-  singleOrfNames <- unlist(strsplit(grep(";", tbl, value = TRUE), ";"))
+   if(!grepl(";", string))
+      return(string)
+  
+  singleOrfNames <- unlist(strsplit(string, ";"))
+  
   return(singleOrfNames)
 }
 #---------------------------------------------------------------------------------------------------
-test_identifyMultiOrfNames <- function()
+test_splitNames <- function()
 {
-   message(sprintf("--- test_identifyMultiOrfNames"))
-   
-   result <- identifyMultiOrfNames("abcd;efgh")
+   message(sprintf("--- test_splitNames"))
+   checkEquals(splitNames("abc"), "abc")   
+   checkEquals(splitNames(""), "")
+
+   result <- splitNames("abcd;efgh")
    checkEquals(result, c("abcd", "efgh"))
    
-   result.2 <- identifyMultiOrfNames("abcd;efgh;ijkl")
+   result.2 <- splitNames("abcd;efgh;ijkl")
    checkEquals(result.2, c("abcd", "efgh", "ijkl"))
    
-   result.3 <- identifyMultiOrfNames("abcd;efgh;ijkl;mnop")
+   result.3 <- splitNames("abcd;efgh;ijkl;mnop")
    checkEquals(result.3, c("abcd", "efgh", "ijkl", "mnop"))
    
-   result.4 <- identifyMultiOrfNames("abcd;efgh;ijkl;mnop;qrst")
+   result.4 <- splitNames("abcd;efgh;ijkl;mnop;qrst")
    checkEquals(result.4, c("abcd", "efgh", "ijkl", "mnop", "qrst"))
 
-} # test_identifyMultiOrfNames
+} # test_splitNames
 #----------------------------------------------------------------------------------------------------
 if(!interactive())
    runTests()
 #---------------------------------------------------------------------------------------------------
+
