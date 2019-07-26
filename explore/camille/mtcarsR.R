@@ -32,12 +32,21 @@ summary(model.carb)$r.squared # [1] 0.3035184
 #loading RUnit package
 library(RUnit)
 
+#testing all
+#-------------------------------------------------------------------------------
+run_tests <- function()
+{
+  test_model()
+  test_model1()
+}
+
+#-------------------------------------------------------------------------------
+
 #function for r squared values (mpg vs one predictor)
 #----------------------------------------------------------------------------------------------------
 model <- function(target, predictor) #input with quotes
 {
    model.x <- lm(formula = mtcars[[target]] ~ mtcars[[predictor]])
-   #model.x <-lm(formula = mpg ~ x, data=mtcars)
    summary(model.x)$r.squared
 }
 #----------------------------------------------------------------------------------------------------
@@ -84,16 +93,14 @@ with(r_squared_data_frame, barplot(rSquared, names.arg = names(r.squared), main 
 #------------------------------------------------------------------------
 
 #model repeated for each predictor
-#-------------------------------------------------------------------------
+#---------------------------------------------------------------------------
 for(i in 2:11)
 {
-  b <- as.numeric(mtcars[,i])
-  model("mpg",b)
+  model.x <- lm(formula = mtcars$mpg ~ mtcars[[i]])
+  print(summary(model.x)$r.squared)
 }
-#---------------------------------------------------------------------------
-
-
-
+#-----------------------------------------------------------------------------
 
 #barplot(r.squared, main = "R Squared Values", xlab = "Predictors", ylab = "R-Squared")
 #works using vector instead of data frame to make bar graph
+#model.x <-lm(formula = mpg ~ x, data=mtcars)
