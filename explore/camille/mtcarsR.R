@@ -100,6 +100,23 @@ for(i in 2:11)
   print(summary(model.x)$r.squared)
 }
 #-----------------------------------------------------------------------------
+#model1 for each combo of 2 predictors (residuals)
+for(i in 2:11)
+{
+  for(c in 2:11)
+  {
+    model.b <-lm(formula = mtcars$mpg ~ 
+                   mtcars[[i]] + mtcars[[c]])
+    print(i)
+    print(c)
+    print(summary(model.b)$residuals)
+  }
+}
+
+
+
+
+
 
 #barplot(r.squared, main = "R Squared Values", xlab = "Predictors", ylab = "R-Squared")
 #works using vector instead of data frame to make bar graph
