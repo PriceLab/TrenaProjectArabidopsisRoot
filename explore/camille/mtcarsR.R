@@ -100,7 +100,20 @@ for(i in 2:11)
   print(summary(model.x)$r.squared)
 }
 #-----------------------------------------------------------------------------
-#model1 for each combo of 2 predictors (residuals)
+
+#model for residuals with multiple predictors
+#----------------------------------------------------------------------------
+model2 <- function(target, predictor1, predictor2) #input with quotes
+{
+  model.n <-lm(formula = mtcars[[target]] ~ 
+                 mtcars[[predictor1]] + mtcars[[predictor2]])
+  summary(model.n)$residuals
+}
+#----------------------------------------------------------------------------
+
+
+#model1 for each combo of 2 predictors
+#----------------------------------------------------------------------------
 for(i in 2:11)
 {
   for(c in 2:11)
@@ -109,13 +122,10 @@ for(i in 2:11)
                    mtcars[[i]] + mtcars[[c]])
     print(i)
     print(c)
-    print(summary(model.b)$residuals)
+    print(summary(model.b)$r.squared)
   }
 }
-
-
-
-
+#----------------------------------------------------------------------------
 
 
 #barplot(r.squared, main = "R Squared Values", xlab = "Predictors", ylab = "R-Squared")
