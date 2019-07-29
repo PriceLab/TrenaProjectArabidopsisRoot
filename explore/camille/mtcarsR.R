@@ -44,13 +44,20 @@ two_predictors_rsquared <- function(target, predictor1, predictor2) #input with 
                  mtcars[[predictor1]] + mtcars[[predictor2]])
   summary(model.b)$r.squared
 }#function for r squared values (mpg vs two predictors)
-#--------------------------------------------------------------------------
-two_predictors_rsquared_2 <- function(target, vector) #input with quotes
+#---------------------------------------------------------------------------
+multiple_predictors_model <- function(tbl, target, predictors) #input with quotes
 {
-  model.b <-lm(formula = mtcars[[target]] ~ 
-                 mtcars[[predictor1]] + mtcars[[predictor2]])
-  summary(model.b)$r.squared
-}#two_predictors_rsquared_2
+    variables.proposed <- c(target, predictors)
+    stopifnot(all(variables.proposed %in% colnames(tbl)))
+    
+    part.1 <- sprintf("%s ~ ", target)
+    part.2 <- paste(predictors, collapse=" + ")
+    formula.as.string <- paste(part.1, part.2, sep="")
+    
+    model <- lm(formula.as.string, data=tbl)
+    
+    return(summary(model)$r.squared)
+}#multiple_predictors_model
 #------------------------------------------------------------------------
 r.squared <- c(0.72618,0.7183433,0.6024373,0.4639952,0.7528328,0.1752963,0.4409477,0.3597989,0.2306734,0.3035184)
 names(r.squared) <- c("cyl","disp","hp","drat","wt","qsec","vs","am","gear","carb")
@@ -76,8 +83,6 @@ two_predictors_residuals <- function(target, predictor1, predictor2) #input with
   summary(model.n)$residuals
 }#model for residuals with multiple predictors
 #----------------------------------------------------------------------------
-vector.b <- c()
-
 rsquared <- function()
 {
 for(i in 2:11)
@@ -87,16 +92,28 @@ for(i in 2:11)
     model.b <-lm(formula = mtcars$mpg ~ 
                    mtcars[[i]] + mtcars[[c]])
     vector.b <- c(vector.b, i)
-    #print(i)
-    #print(c)
-    print(summary(model.b)$r.squared)
+    vector.c <-c(vector.c, summary(model.b)$r.squared)
   }
 }
+  print(vector.c)
+  data_frame_rsquared <- data.frame(predictor1 = vector.b, 
+                                    predictor2 = c(colnames(mtcars[,-1]), colnames(mtcars[,-1]),colnames(mtcars[,-1]),colnames(mtcars[,-1]),colnames(mtcars[,-1]),
+                                                   colnames(mtcars[,-1]),colnames(mtcars[,-1]),colnames(mtcars[,-1]),colnames(mtcars[,-1]),colnames(mtcars[,-1])), 
+                                    rSquared = vector.c)
 }
-data_frame_rsquared <- data.frame(predictor1 = vector.b, 
-                                  predictor2 = colnames(mtcars[,-1]), 
-                                  rSquared = summary(model.b)$r.squared)
 #r squared calculated for each combo of 2 predictors
+#----------------------------------------------------------------------------
+ predictor_list <- function()
+{
+  
+}
+rsquared2 <- function()
+{
+  all.predictors <- c(setdiff(colnames(mtcars),"mpg"))
+  list <- lapply(all.predictors, )
+  twoPredictors <- #complete list of pairs
+  lapply(twoPredictors, multiple_predictors_model)
+}#r squared calculated for each combo of 2 predictors
 #----------------------------------------------------------------------------
 
 
