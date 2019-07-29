@@ -98,7 +98,7 @@ for(i in 2:11)
   print(vector.c)
   data_frame_rsquared <- data.frame(predictor1 = vector.b, 
                                     predictor2 = c(rep(colnames(mtcars[,-1]), 10)), 
-                                    rSquared = vector.c)
+                                    rSquared = vector.c)#data frame doesnt work
 }
 #r squared calculated for each combo of 2 predictors
 #----------------------------------------------------------------------------
@@ -112,11 +112,3 @@ rsquared2 <- function()
   apply(two.combo.list,1, multiple_predictors_model, target = "mpg", tbl = mtcars)
 }#r squared calculated for each combo of 2 predictors
 #----------------------------------------------------------------------------
-
-
-#data_frame_rsquared <- data.frame(predictor1 = i, predictor2 = c, 
-#rSquared = summary(model.b)$r.squared)
-
-#barplot(r.squared, main = "R Squared Values", xlab = "Predictors", ylab = "R-Squared")
-#works using vector instead of data frame to make bar graph
-#model.x <-lm(formula = mpg ~ x, data=mtcars)
