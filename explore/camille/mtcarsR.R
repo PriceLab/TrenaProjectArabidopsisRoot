@@ -97,22 +97,19 @@ for(i in 2:11)
 }
   print(vector.c)
   data_frame_rsquared <- data.frame(predictor1 = vector.b, 
-                                    predictor2 = c(colnames(mtcars[,-1]), colnames(mtcars[,-1]),colnames(mtcars[,-1]),colnames(mtcars[,-1]),colnames(mtcars[,-1]),
-                                                   colnames(mtcars[,-1]),colnames(mtcars[,-1]),colnames(mtcars[,-1]),colnames(mtcars[,-1]),colnames(mtcars[,-1])), 
+                                    predictor2 = c(rep(colnames(mtcars[,-1]), 10)), 
                                     rSquared = vector.c)
 }
 #r squared calculated for each combo of 2 predictors
 #----------------------------------------------------------------------------
- predictor_list <- function()
-{
-  
-}
 rsquared2 <- function()
 {
   all.predictors <- c(setdiff(colnames(mtcars),"mpg"))
-  list <- lapply(all.predictors, )
-  twoPredictors <- #complete list of pairs
-  lapply(twoPredictors, multiple_predictors_model)
+  list1 <- as.list(c(rep(all.predictors,10)))
+  list2 <- as.list(c(rep("cyl",10),rep("disp",10),rep("hp",10),rep("drat",10),rep("wt",10),
+                     rep("qsec",10),rep("vs",10),rep("am",10),rep("gear",10),rep("carb",10)))
+  two.combo.list <- cbind(list1,list2)
+  apply(two.combo.list,1, multiple_predictors_model, target = "mpg", tbl = mtcars)
 }#r squared calculated for each combo of 2 predictors
 #----------------------------------------------------------------------------
 
