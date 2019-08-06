@@ -1,7 +1,7 @@
 library(RUnit)
 #----------------------------------------------------------------------------------------------------
-if(!exists("tbl.test"))
-   load("tbl.test.RDAta")
+if(!exists("test.tbl"))
+   load("test.tbl.RDAta")
 
 #----------------------------------------------------------------------------------------------------
 eliminateDuplicateRows <- function(tbl)
@@ -24,24 +24,25 @@ eliminateDuplicateRows <- function(tbl)
     # Setting the Alias column names to now be the rownames of the data frame (it was previously in numerical order)
     tbl.sorted.nodupes <- tbl.sorted.nodupes[, -c(1:2)]
       #deleting columns 1 & 2 from the data frame: the "id" column & "Alias" column.
-      #In the previous step, the Alias column was used for the rownames, so it is now unnecessary to have the column
-
-
+      #In the previous step, the Alias column was used for the rownames, so it is not unnecessary to have the column
     variance.column <- grep("variance", colnames(tbl.sorted.nodupes))
+    #search for the column name with "variance". set it as variance.column
     tbl.sorted.nodupes <- tbl.sorted.nodupes[, -variance.column]
+    #delete variance column
     return(tbl.sorted.nodupes)
+    #result is an organized table with no duplicate rows
 
 } # eliminateDuplicateRows
 #----------------------------------------------------------------------------------------------------
 test_eliminateDuplicateRows <- function()
 {
    print("--- test_eliminateDuplicateRows")
-   there.are.duplicates <- any(duplicated(tbl.test$Alias))
+   there.are.duplicates <- any(duplicated(test.tbl$Alias))
    checkTrue(there.are.duplicates)
 
-   tbl.fixed <- eliminateDuplicateRows(tbl.test)
-   checkTrue(nrow(tbl.fixed) < nrow(tbl.test))
-   checkEquals(ncol(tbl.fixed), ncol(tbl.test) - 2)
+   tbl.fixed <- eliminateDuplicateRows(test.tbl)
+   checkTrue(nrow(tbl.fixed) < nrow(test.tbl))
+   checkTrue(ncol(tbl.fixed) < ncol(tbl.test))
 
 } # test_loadData
 #----------------------------------------------------------------------------------------------------
