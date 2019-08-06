@@ -1,12 +1,12 @@
 Package: TrenaProjectArabidopsisRoot
 Title: explore transporters in Arabidopsis roots
-Date: 2019-07-17
-Version: 0.99.3
+Date: 2019-08-06
+Version: 1.0.1
 Author: Paul Shannon
 Maintainer: Paul Shannon <pshannon@systemsbiology.org>
 Description: Trena and TrenaViz for metal transporters and etc in arabidopsis
 Imports: methods
-Depends: R (>= 3.5.1), TrenaProject
+Depends: R (>= 3.5.0), TrenaProject (>= 1.2.0)
 License: Apache 2.0
 Encoding: UTF-8
 LazyData: true
