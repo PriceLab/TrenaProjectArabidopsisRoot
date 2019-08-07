@@ -56,6 +56,9 @@ test_eliminateDuplicateRows <- function()
    #check if there are less rows in the result table than than the original table
    checkTrue(ncol(tbl.fixed) < ncol(test.tbl))
    #check if there are less columns in the result table than the original table
+   checkEquals((length(grep(";", test.tbl$Alias))), (length(grep(";", rownames(tbl.fixed)))))
+   #check if the # of times ";" is found in the orginal table is the same as the result table
+   #in our first original table (the smaller table before the entire root.tbl is used), there should be 15
    
 } # test_loadData
 #----------------------------------------------------------------------------------------------------
@@ -64,11 +67,12 @@ splitNames <- function(string)
 {
    if(!grepl(";", string))
    {return(string)}
+   #if there isnt a ";" in the parameter, just simply return the the parameter
    else if(grepl(";", string)){
-      #if there isnt a ";" in the parameter, just simply the parameter
+      #if there is a ";" in our input, do the following:
       
       singleOrfNames <- unlist(strsplit(string, ";"))
-      #split the rownames by ";", this alone will print a list, so "unlist" is used
+      #split the rownames by ";", this alone will print a list, so "unlist" is used to print out characters/strings
       return(singleOrfNames)}
 }
 #---------------------------------------------------------------------------------------------------
@@ -93,9 +97,26 @@ test_splitNames <- function()
    
    result.4 <- splitNames("abcd;efgh;ijkl;mnop;qrst")
    checkEquals(result.4, c("abcd", "efgh", "ijkl", "mnop", "qrst"))
-   #checking for 3 splits
+   #checking for 4 splits
 
 } # test_splitNames
+#----------------------------------------------------------------------------------------------------
+#create function splitNamesDoubleRows by using previously made splitNames function
+
+tbl <- eliminateDuplicateRows(test.tbl)
+splitNamesRepeatRows <- function(tbl)
+{   
+   mtx <- as.matrix(numRepeatRows)
+   numRepeatRows <- list(apply(mtx, 1, length))
+   x <- lapply(1:nrow(tbl), function(i) splitNames(tbl[i,]))
+   # (1:nrow(tbl)) creates a sequence/list to loop over by making a vector of integers calculated from the # of rows in "tbl"
+   # in this case, tbl 400 rows so integers 1-25
+   # "i" allows any variable to be used in the function (mainly loops); is simply used as an index
+   # lapply takes the vector of integers calculated from the # of rows in tbl & the function as inputs so the function is applied to each element in the vector
+   # sets it to a variable "x" to make life easier
+   tbl.combined <- do.call(rbind, x)
+}
+
 #----------------------------------------------------------------------------------------------------
 if(!interactive())
    runTests()
