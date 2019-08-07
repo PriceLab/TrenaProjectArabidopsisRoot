@@ -4,11 +4,11 @@ runTests <- function()
 {
    test_splitNames()
    test_eliminateDuplicateRows()
-   
+
 } # runTests
 #----------------------------------------------------------------------------------------------------
 if(!exists("test.tbl"))
-   get(load("test.tbl.RDAta"))
+   load("test.tbl.RDAta")
 
 #----------------------------------------------------------------------------------------------------
 eliminateDuplicateRows <- function(tbl)
@@ -38,7 +38,7 @@ eliminateDuplicateRows <- function(tbl)
    #delete variance column
    return(tbl.sorted.nodupes)
    #result is an organized table with no duplicate rows
-   
+
 } # eliminateDuplicateRows
 #----------------------------------------------------------------------------------------------------
 test_eliminateDuplicateRows <- function()
@@ -59,7 +59,7 @@ test_eliminateDuplicateRows <- function()
    checkEquals((length(grep(";", test.tbl$Alias))), (length(grep(";", rownames(tbl.fixed)))))
    #check if the # of times ";" is found in the orginal table is the same as the result table
    #in our first original table (the smaller table before the entire root.tbl is used), there should be 15
-   
+
 } # test_loadData
 #----------------------------------------------------------------------------------------------------
 # create function splitNames
@@ -70,31 +70,50 @@ splitNames <- function(string)
    #if there isnt a ";" in the parameter, just simply return the the parameter
    else if(grepl(";", string)){
       #if there is a ";" in our input, do the following:
-      
+
       singleOrfNames <- unlist(strsplit(string, ";"))
       #split the rownames by ";", this alone will print a list, so "unlist" is used to print out characters/strings
       return(singleOrfNames)}
 }
 #---------------------------------------------------------------------------------------------------
+splitNames.2 <- function(names)
+{
+   strsplit(names, ";")
+
+} # splitNames.2
+#---------------------------------------------------------------------------------------------------
+test_splitNames.2 <- function()
+{
+   message(sprintf("--- test_splitNames.2"))
+   checkEquals(splitNames.2("abc"), list("abc"))
+
+   checkEquals(splitNames.2("abcd;efgh"), list(c("abcd", "efgh")))
+
+   checkEquals(splitNames.2(c("abc", "abcd;efgh")), list("abc", c("abcd", "efgh")))
+
+} # test_splitNames.2
+#---------------------------------------------------------------------------------------------------
 test_splitNames <- function()
 {
    message(sprintf("--- test_splitNames"))
-   checkEquals(splitNames("abc"), "abc")   
+   chesplitNames.2("abc")
+
+   checkEquals(splitNames("abc"), "abc")
    checkEquals(splitNames(""), "")
    #checking for no splits
 
-   result <- splitNames("abcd;efgh")
+   result <- splitNames.2("abcd;efgh")
    checkEquals(result, c("abcd", "efgh"))
    #checking for 1 splits
-   
+
    result.2 <- splitNames("abcd;efgh;ijkl")
    checkEquals(result.2, c("abcd", "efgh", "ijkl"))
    #checking for 2 splits
-   
+
    result.3 <- splitNames("abcd;efgh;ijkl;mnop")
    checkEquals(result.3, c("abcd", "efgh", "ijkl", "mnop"))
    #checking for 3 splits
-   
+
    result.4 <- splitNames("abcd;efgh;ijkl;mnop;qrst")
    checkEquals(result.4, c("abcd", "efgh", "ijkl", "mnop", "qrst"))
    #checking for 4 splits
@@ -105,7 +124,7 @@ test_splitNames <- function()
 
 tbl <- eliminateDuplicateRows(test.tbl)
 splitNamesRepeatRows <- function(tbl)
-{   
+{
    mtx <- as.matrix(numRepeatRows)
    numRepeatRows <- list(apply(mtx, 1, length))
    x <- lapply(1:nrow(tbl), function(i) splitNames(tbl[i,]))
@@ -116,7 +135,53 @@ splitNamesRepeatRows <- function(tbl)
    # sets it to a variable "x" to make life easier
    tbl.combined <- do.call(rbind, x)
 }
+#----------------------------------------------------------------------------------------------------
+test_splitNamesRepeatRows <- function()
+{
+   message(sprintf("--- test_splitNamesRepeatRows"))
 
+   stopifnot(exists("test.tbl"))
+   tbl.fixed <- eliminateDuplicateRows(test.tbl)
+   tbl.tiny <- tbl.fixed[1:6, 1:5]
+
+
+} # test_splitNamesRepeatRows
+#----------------------------------------------------------------------------------------------------
+replicate.rows.when.needed <- function(row)
+{
+  browser()
+  new.row.names <- unlist(splitNames.2(rownames(row)))
+  total.row.count <- length(new.row.names)
+
+  if(total.row.count == 1)
+     return(row)
+
+    # we get here only if total.row.count > 1
+
+  tbl.expanded <- matrix(rep(t(row), total.row.count), ncol = ncol(row) , byrow = TRUE )
+  colnames(tbl.expanded) <- colnames(row)
+  rownames(tbl.expanded) <- new.row.names
+
+  return(tbl.expanded)
+
+} # replicate.rows.when.needed
+#----------------------------------------------------------------------------------------------------
+test_replicate.rows.when.needed <- function()
+{
+   stopifnot(exists("test.tbl"))
+   tbl.fixed <- eliminateDuplicateRows(test.tbl)
+   tbl.tiny <- as.matrix(tbl.fixed[1:6, 1:5])
+
+   tbl.expanded2 <- replicate.rows.when.needed(tbl.tiny[2,])
+
+   tbl.expanded <- replicate.rows.when.needed(tbl.tiny[1,])
+     # do a bunch of checks here
+
+   list.of.tables <- apply(tbl.tiny, 1, replicate.rows.when.needed)
+   tbl.fixed <- do.call(rbind, list.of.tables)
+   checkEquals(dim(tbl.fixed), c(8, 5))
+
+} # test_replicate.rows.when.needed
 #----------------------------------------------------------------------------------------------------
 if(!interactive())
    runTests()
