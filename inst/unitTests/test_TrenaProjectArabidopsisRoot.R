@@ -18,6 +18,7 @@ runTests <- function()
    test_getGeneNames()
    test_supportedGenes()
    test_getTranscriptionFactors()
+   test_findCandidateTranscriptionFactorsByMotifInSequence()
 
    test_footprintDatabases()
    test_expressionMatrices()
@@ -174,13 +175,23 @@ test_canonicalizeName <- function()
 
 } # test_canonicalizeName
 #------------------------------------------------------------------------------------------------------------------------
-test_findCandidateTranscriptionFactors <- function()
+test_findCandidateTranscriptionFactorsByMotifInSequence <- function()
 {
-   message(sprintf("--- test_findCandidateTranscriptionFactors"))
-   tbl.region <- data.frame(chrom="Chr3", start=20438542, end=20438963, stringsAsFactors=FALSE)
-   tfs <- findCandidateTranscriptionFactors(tp, tbl.region, 95L)
+   message(sprintf("--- test_findCandidateTranscriptionFactorsByMotifInSequence"))
 
-} # test_findCandidateTranscriptionFactors
+   start.loc <- 20438600
+   end.loc   <- start.loc + 30
+   tbl.region <- data.frame(chrom="Chr3", start=start.loc, end=end.loc, stringsAsFactors=FALSE)
+   tbl.tfs <- findCandidateTranscriptionFactorsByMotifInSequence(tp, tbl.region, 95L)
+   checkEquals(dim(tbl.tfs), c(2, 14))
+   checkEquals(tbl.tfs$orf, c("AT5G62165", "AT1G80840"))
+
+   tbl.tfs <- findCandidateTranscriptionFactorsByMotifInSequence(tp, tbl.region, 80L)
+   checkEquals(dim(tbl.tfs), c(37, 14))
+   checkEquals(length(unique(tbl.tfs$orf)), 30)
+   checkTrue(all(c("AT5G62165", "AT1G80840") %in% tbl.tfs$orf))
+
+} # test_findCandidateTranscriptionFactorsByMotifInSequence
 #------------------------------------------------------------------------------------------------------------------------
 if(!interactive())
    runTests()

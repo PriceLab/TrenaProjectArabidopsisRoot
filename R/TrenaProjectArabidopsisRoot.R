@@ -2,7 +2,8 @@
 #' @import methods
 #' @import TrenaProject
 #' @importMethodsFrom TrenaProject getAllTranscriptionFactors
-
+#' @importFrom trena MotifMatcher
+#' @importMethodsFrom trena findMatchesByChromosomalRegion, MotifMatcher
 #' @importFrom AnnotationDbi select
 #' @import org.Hs.eg.db
 #'
@@ -99,8 +100,8 @@ setMethod('getAllTranscriptionFactors', 'TrenaProjectArabidopsisRoot',
 #------------------------------------------------------------------------------------------------------------------------
 setGeneric('getGeneNames', signature='obj', function(obj, name) standardGeneric ('getGeneNames'))
 setGeneric('canonicalizeName', signature='obj', function(obj, name) standardGeneric ('canonicalizeName'))
-setGeneric('findCandidateTranscriptionFactors', signature='obj', function(obj, tbl.regions, pwmMatchMinimumAsPercentage)
-              standardGeneric ('findCandidateTranscriptionFactors'))
+setGeneric('findCandidateTranscriptionFactorsByMotifInSequence', signature='obj', function(obj, tbl.regions, pwmMatchMinimumAsPercentage)
+              standardGeneric ('findCandidateTranscriptionFactorsByMotifInSequence'))
 
 #------------------------------------------------------------------------------------------------------------------------
 #' get orf and geneSymbol for orf or geneSymbol
@@ -174,8 +175,8 @@ setMethod('canonicalizeName', 'TrenaProjectArabidopsisRoot',
 #' @description
 #' uses the "Bioconductor motif matcher" aka Biostrings::matchPWM as wrapped by trena's MotifMatcher class
 #'
-#' @rdname findCandidateTranscriptionFactors
-#' @aliases findCandidateTranscriptionFactors
+#' @rdname findCandidateTranscriptionFactorsByMotifInSequence
+#' @aliases findCandidateTranscriptionFactorsByMotifInSequence
 #'
 #' @param obj An object of class TrenaProject
 #' @param tbl.regions A data.frame with chrom, start and end columsn
@@ -183,7 +184,7 @@ setMethod('canonicalizeName', 'TrenaProjectArabidopsisRoot',
 #'
 #' @export
 
-setMethod('findCandidateTranscriptionFactors', 'TrenaProjectArabidopsisRoot',
+setMethod('findCandidateTranscriptionFactorsByMotifInSequence', 'TrenaProjectArabidopsisRoot',
 
     function(obj, tbl.regions, pwmMatchMinimumAsPercentage){
 
@@ -199,11 +200,11 @@ setMethod('findCandidateTranscriptionFactors', 'TrenaProjectArabidopsisRoot',
 
       pfms <- query(MotifDb, c("athaliana", "jaspar2018"))
       mm <- MotifMatcher("tair10", as.list(pfms), quiet=TRUE)
-      tbl.motifs <- findMatchesByChromosomalRegion(mm, tbl.regions, pwmMatchMinimumAsPercentage=95L)
+      tbl.motifs <- trena::findMatchesByChromosomalRegion(mm, tbl.regions, pwmMatchMinimumAsPercentage)
       if(nrow(tbl.motifs) == 0)
          return(vector(mode="character", length=0))
       tbl.motifs <- add.orfs.to.motif.table(tbl.motifs)
-      unique(tbl.motifs$orf)
+      tbl.motifs
       })
 
 #------------------------------------------------------------------------------------------------------------------------
