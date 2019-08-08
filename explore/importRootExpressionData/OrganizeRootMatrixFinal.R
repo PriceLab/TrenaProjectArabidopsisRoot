@@ -149,7 +149,6 @@ test_splitNamesRepeatRows <- function()
 #----------------------------------------------------------------------------------------------------
 replicate.rows.when.needed <- function(x)
 {
-  browser()
   new.row.names <- splitNames(rownames(x[,,drop=FALSE]))
   total.row.count <- length(new.row.names)
 
@@ -172,20 +171,32 @@ test_replicate.rows.when.needed <- function()
    stopifnot(exists("test.tbl"))
    tbl.fixed <- eliminateDuplicateRows(test.tbl)
    tbl.tiny <- as.matrix(tbl.fixed[1:6, 1:5])
-   
+
+       # row 2 of tbl.tiny has a simple single orf name, ATMG00840
    tbl.expanded2 <- replicate.rows.when.needed(tbl.tiny[2,,drop=FALSE])
-   
+   checkEquals(dim(tbl.expanded2), c(1, 5))
+      # row 1 has a double orf name: ATMG00850;AT2G07682
    tbl.expanded.1 <- replicate.rows.when.needed(tbl.tiny[1,,drop=FALSE])
+   checkEquals(dim(tbl.expanded.1), c(2, 5))
+   checkEquals(rownames(tbl.expanded.1), c("ATMG00850", "AT2G07682"))
+
      # do a bunch of checks here
    checkEquals(rownames(tbl.expanded.1), splitNames(rownames(tbl.tiny[1,,drop=FALSE])))
    checkEquals(rownames(tbl.expanded2), splitNames(rownames(tbl.tiny[2,,drop=FALSE])))
-   browser()
-   tbl.myTiny <- tbl.tiny[,,drop=FALSE]
-   list.of.tables <- apply(tbl.tiny[,,drop=FALSE], 1, replicate.rows.when.needed)
-   tbl.result <- do.call(rbind, list.of.tables)
-   checkEquals(dim(tbl.result), c(8,5))
-   checkTrue(nrow(tbl.result) > nrow(tbl.tiny))
-   checkEquals((length(splitNames(rownames(tbl.tiny[1:nrow(tbl.tiny),])))), nrow(tbl.result))
+
+     # now for a more complete and realistic test, iterate over the whole of the matrix,
+     # row by row, ucalling replicate.rows.when.needed  on each row.  since apply (an
+     # otherwise sensible solution) drops row names, let's  try an old-fashioned for loop
+
+   result <- list()
+   for(i in 1:nrow(tbl.tiny)){
+      result[[i]] <- replicate.rows.when.needed(tbl.tiny[i,,drop=FALSE])
+      }
+
+   mtx.expanded <- do.call(rbind, result)
+   checkEquals(dim(mtx.expanded), c(8, 5))
+   expected.rownames <- unlist(strsplit(rownames(tbl.tiny), ";"))
+   checkEquals(rownames(mtx.expanded), expected.rownames)
 
 } # test_replicate.rows.when.needed
 #----------------------------------------------------------------------------------------------------
