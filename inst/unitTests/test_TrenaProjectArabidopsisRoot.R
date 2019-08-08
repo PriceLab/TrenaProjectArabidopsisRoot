@@ -174,5 +174,13 @@ test_canonicalizeName <- function()
 
 } # test_canonicalizeName
 #------------------------------------------------------------------------------------------------------------------------
+test_findCandidateTranscriptionFactors <- function()
+{
+   message(sprintf("--- test_findCandidateTranscriptionFactors"))
+   tbl.region <- data.frame(chrom="Chr3", start=20438542, end=20438963, stringsAsFactors=FALSE)
+   tfs <- findCandidateTranscriptionFactors(tp, tbl.region, 95L)
+
+} # test_findCandidateTranscriptionFactors
+#------------------------------------------------------------------------------------------------------------------------
 if(!interactive())
    runTests()
