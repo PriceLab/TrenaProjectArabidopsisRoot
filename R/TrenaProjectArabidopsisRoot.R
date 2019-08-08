@@ -62,8 +62,9 @@ TrenaProjectArabidopsisRoot <- function(quiet=TRUE)
                                                     packageDataDirectory=dataDirectory,
                                                     quiet=quiet
                                                     ))
-   tbl.names <- get(load(system.file(package="TrenaProjectArabidopsisRoot", "extdata", "misc", "geneIdMap.RData")))
-   obj@state$tbl.geneNames <- tbl.names
+   tbl.orfsAndSyms <- get(load(system.file(package="TrenaProjectArabidopsisRoot", "extdata", "misc", "geneIdMap.RData")))
+   obj@state$tbl.geneNames <- tbl.orfsAndSyms
+   obj@state$tbl.aliases <- get(load(system.file(package="TrenaProjectArabidopsisRoot", "extdata", "misc", "tbl.aliases.RData")))
 
    obj
 
@@ -97,6 +98,7 @@ setMethod('getAllTranscriptionFactors', 'TrenaProjectArabidopsisRoot',
 
 #------------------------------------------------------------------------------------------------------------------------
 setGeneric('getGeneNames', signature='obj', function(obj, name) standardGeneric ('getGeneNames'))
+setGeneric('canonicalizeName', signature='obj', function(obj, name) standardGeneric ('canonicalizeName'))
 #------------------------------------------------------------------------------------------------------------------------
 #' get orf and geneSymbol for orf or geneSymbol
 #'
@@ -119,8 +121,49 @@ setMethod('getGeneNames', 'TrenaProjectArabidopsisRoot',
           return(list(symbol=tbl$geneSymbol[symbol.match], orf=tbl$orf[symbol.match]))
        if(orf.match)
           return(list(symbol=tbl$geneSymbol[orf.match], orf=tbl$orf[orf.match]))
+       if(grepl("^at", name))
+          return(list(symbol=toupper(name), orf=toupper(name)))
        return(NULL)
        })
+
+#------------------------------------------------------------------------------------------------------------------------
+#' map every possible gene name and/or symbol to a standard AT orf name
+#'
+#' @rdname canonicalizeName
+#' @aliases canonicalizeName
+#'
+#' @param obj An object of class TrenaProject
+#' @param name A character string: gene symbol, orf name, odd alias
+#'
+#' @export
+
+setMethod('canonicalizeName', 'TrenaProjectArabidopsisRoot',
+
+      function(obj, name) {
+        tbl.aliases <- obj@state$tbl.aliases
+        tbl.orfSym <- obj@state$tbl.geneNames
+        #browser()
+        #xyz <- "in canoncializeName"
+        if(!name %in% tbl.orfSym$geneSymbol){
+           if(grepl("^AT[A-Z]", "ATWBC19"))
+              name <- sub("^AT", "", name)
+           }
+        name <- strsplit(name, " ")[[1]][1]
+        if(grepl("^AT[1-5]", name))
+           return(name)
+        if(name %in% tbl.orfSym$geneSymbol){
+           index <- match(name, tbl.orfSym$geneSymbol)
+           return(tbl.orfSym$orf[index])
+           }
+        if(name %in% tbl.aliases$symbol){
+           index <- match(name, tbl.orfSym$geneSymbol)
+           return(tbl.orfSym$orf[index])
+           }
+        index <- grep(name, tbl.aliases$tokens)
+        if(length(index) > 0)
+           return(tbl.aliases$locus_name[index])
+        return(name)
+        })
 
 #------------------------------------------------------------------------------------------------------------------------
 
