@@ -3,6 +3,7 @@
 export(TrenaProjectArabidopsisRoot)
 exportClasses(TrenaProjectArabidopsisRoot)
 exportMethods(canonicalizeName)
+exportMethods(findCandidateTranscriptionFactors)
 exportMethods(getAllTranscriptionFactors)
 exportMethods(getGeneNames)
 import(TrenaProject)

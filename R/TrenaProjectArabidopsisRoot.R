@@ -99,6 +99,9 @@ setMethod('getAllTranscriptionFactors', 'TrenaProjectArabidopsisRoot',
 #------------------------------------------------------------------------------------------------------------------------
 setGeneric('getGeneNames', signature='obj', function(obj, name) standardGeneric ('getGeneNames'))
 setGeneric('canonicalizeName', signature='obj', function(obj, name) standardGeneric ('canonicalizeName'))
+setGeneric('findCandidateTranscriptionFactors', signature='obj', function(obj, tbl.regions, pwmMatchMinimumAsPercentage)
+              standardGeneric ('findCandidateTranscriptionFactors'))
+
 #------------------------------------------------------------------------------------------------------------------------
 #' get orf and geneSymbol for orf or geneSymbol
 #'
@@ -164,6 +167,44 @@ setMethod('canonicalizeName', 'TrenaProjectArabidopsisRoot',
            return(tbl.aliases$locus_name[index])
         return(name)
         })
+
+#------------------------------------------------------------------------------------------------------------------------
+#' identify transcription factors (using orf names) with motif match above threshold in the specified regions
+#'
+#' @description
+#' uses the "Bioconductor motif matcher" aka Biostrings::matchPWM as wrapped by trena's MotifMatcher class
+#'
+#' @rdname findCandidateTranscriptionFactors
+#' @aliases findCandidateTranscriptionFactors
+#'
+#' @param obj An object of class TrenaProject
+#' @param tbl.regions A data.frame with chrom, start and end columsn
+#' @param pwmMatchMinimumAsPercentage a long integer (eg, 95L) expression minimum match threshold percentage
+#'
+#' @export
+
+setMethod('findCandidateTranscriptionFactors', 'TrenaProjectArabidopsisRoot',
+
+    function(obj, tbl.regions, pwmMatchMinimumAsPercentage){
+
+       capitalize <- function(chr.name){
+          paste0(toupper(substr(chr.name, 1, 1)), substr(chr.name, 2, nchar(chr.name)))
+          }
+       add.orfs.to.motif.table <- function(tbl.motifs){
+         geneSymbols <- unlist(lapply(tbl.motifs$motifName, function(motifName) mcols(MotifDb[motifName])$geneSymbol))
+         orfs <- unlist(lapply(geneSymbols, function(geneSymbol) canonicalizeName(tp, geneSymbol)))
+         tbl.motifs$orf <- orfs
+         tbl.motifs
+         }
+
+      pfms <- query(MotifDb, c("athaliana", "jaspar2018"))
+      mm <- MotifMatcher("tair10", as.list(pfms), quiet=TRUE)
+      tbl.motifs <- findMatchesByChromosomalRegion(mm, tbl.regions, pwmMatchMinimumAsPercentage=95L)
+      if(nrow(tbl.motifs) == 0)
+         return(vector(mode="character", length=0))
+      tbl.motifs <- add.orfs.to.motif.table(tbl.motifs)
+      unique(tbl.motifs$orf)
+      })
 
 #------------------------------------------------------------------------------------------------------------------------
 
