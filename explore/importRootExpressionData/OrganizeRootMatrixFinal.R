@@ -4,6 +4,7 @@ runTests <- function()
 {
    test_splitNames()
    test_eliminateDuplicateRows()
+   test_replicate.rows.when.needed()
 
 } # runTests
 #----------------------------------------------------------------------------------------------------
@@ -149,16 +150,16 @@ test_splitNamesRepeatRows <- function()
 replicate.rows.when.needed <- function(x)
 {
   browser()
-  new.row.names <- splitNames(rownames(x[drop=FALSE]))
+  new.row.names <- splitNames(rownames(x[,,drop=FALSE]))
   total.row.count <- length(new.row.names)
 
   if(total.row.count == 1)
-     return(row)
+     return(x)
 
     # we get here only if total.row.count > 1
 
-  tbl.expanded <- matrix(rep(t(row), total.row.count), ncol = ncol(row) , byrow = TRUE )
-  colnames(tbl.expanded) <- colnames(row)
+  tbl.expanded <- matrix(rep(t(x), total.row.count), ncol = ncol(x) , byrow = TRUE )
+  colnames(tbl.expanded) <- colnames(x)
   rownames(tbl.expanded) <- new.row.names
 
   return(tbl.expanded)
@@ -167,17 +168,19 @@ replicate.rows.when.needed <- function(x)
 #----------------------------------------------------------------------------------------------------
 test_replicate.rows.when.needed <- function()
 {
+   message(sprintf("--- test_replicate.rows.when.needed"))
    stopifnot(exists("test.tbl"))
    tbl.fixed <- eliminateDuplicateRows(test.tbl)
    tbl.tiny <- as.matrix(tbl.fixed[1:6, 1:5])
-
+   
    tbl.expanded2 <- replicate.rows.when.needed(tbl.tiny[2,,drop=FALSE])
    
-   tbl.expanded <- replicate.rows.when.needed(tbl.tiny[1,,drop=FALSE])
+   tbl.expanded.1 <- replicate.rows.when.needed(tbl.tiny[1,,drop=FALSE])
      # do a bunch of checks here
-   checkEquals(rownames(tbl.expanded), splitNames(rownames(tbl.tiny[1,,drop=FALSE])))
+   checkEquals(rownames(tbl.expanded.1), splitNames(rownames(tbl.tiny[1,,drop=FALSE])))
    checkEquals(rownames(tbl.expanded2), splitNames(rownames(tbl.tiny[2,,drop=FALSE])))
-   
+   browser()
+   tbl.myTiny <- tbl.tiny[,,drop=FALSE]
    list.of.tables <- apply(tbl.tiny[,,drop=FALSE], 1, replicate.rows.when.needed)
    tbl.result <- do.call(rbind, list.of.tables)
    checkEquals(dim(tbl.result), c(8,5))
