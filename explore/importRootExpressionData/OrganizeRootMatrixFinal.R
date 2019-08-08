@@ -63,7 +63,7 @@ test_eliminateDuplicateRows <- function()
 } # test_loadData
 #----------------------------------------------------------------------------------------------------
 # create function splitNames
-splitNames <- function(string)
+old.splitNames <- function(string)
 {
    if(!grepl(";", string))
    {return(string)}
@@ -76,45 +76,44 @@ splitNames <- function(string)
       return(singleOrfNames)}
 }
 #---------------------------------------------------------------------------------------------------
-splitNames.2 <- function(names)
+splitNames <- function(names)
 {
-   strsplit(names, ";")
+   unlist(strsplit(names, ";"))
 
-} # splitNames.2
-#---------------------------------------------------------------------------------------------------
-test_splitNames.2 <- function()
-{
-   message(sprintf("--- test_splitNames.2"))
-   checkEquals(splitNames.2("abc"), list("abc"))
-
-   checkEquals(splitNames.2("abcd;efgh"), list(c("abcd", "efgh")))
-
-   checkEquals(splitNames.2(c("abc", "abcd;efgh")), list("abc", c("abcd", "efgh")))
-
-} # test_splitNames.2
+} # splitNames
 #---------------------------------------------------------------------------------------------------
 test_splitNames <- function()
 {
    message(sprintf("--- test_splitNames"))
-   chesplitNames.2("abc")
-
    checkEquals(splitNames("abc"), "abc")
-   checkEquals(splitNames(""), "")
+
+   checkEquals(splitNames("abcd;efgh"), c("abcd", "efgh"))
+
+   checkEquals(splitNames(c("abc", "abcd;efgh")), c("abc","abcd", "efgh"))
+
+} # test_splitNames
+#---------------------------------------------------------------------------------------------------
+test_old.splitNames <- function()
+{
+   message(sprintf("--- test_old.splitNames"))
+
+   checkEquals(old.splitNames("abc"), "abc")
+   checkEquals(old.splitNames(""), "")
    #checking for no splits
 
-   result <- splitNames.2("abcd;efgh")
+   result <- old.splitNames("abcd;efgh")
    checkEquals(result, c("abcd", "efgh"))
    #checking for 1 splits
 
-   result.2 <- splitNames("abcd;efgh;ijkl")
+   result.2 <- old.splitNames("abcd;efgh;ijkl")
    checkEquals(result.2, c("abcd", "efgh", "ijkl"))
    #checking for 2 splits
 
-   result.3 <- splitNames("abcd;efgh;ijkl;mnop")
+   result.3 <- old.splitNames("abcd;efgh;ijkl;mnop")
    checkEquals(result.3, c("abcd", "efgh", "ijkl", "mnop"))
    #checking for 3 splits
 
-   result.4 <- splitNames("abcd;efgh;ijkl;mnop;qrst")
+   result.4 <- old.splitNames("abcd;efgh;ijkl;mnop;qrst")
    checkEquals(result.4, c("abcd", "efgh", "ijkl", "mnop", "qrst"))
    #checking for 4 splits
 
@@ -147,10 +146,10 @@ test_splitNamesRepeatRows <- function()
 
 } # test_splitNamesRepeatRows
 #----------------------------------------------------------------------------------------------------
-replicate.rows.when.needed <- function(row)
+replicate.rows.when.needed <- function(x)
 {
   browser()
-  new.row.names <- unlist(splitNames.2(rownames(row)))
+  new.row.names <- splitNames(rownames(x[drop=FALSE]))
   total.row.count <- length(new.row.names)
 
   if(total.row.count == 1)
@@ -172,14 +171,18 @@ test_replicate.rows.when.needed <- function()
    tbl.fixed <- eliminateDuplicateRows(test.tbl)
    tbl.tiny <- as.matrix(tbl.fixed[1:6, 1:5])
 
-   tbl.expanded2 <- replicate.rows.when.needed(tbl.tiny[2,])
-
-   tbl.expanded <- replicate.rows.when.needed(tbl.tiny[1,])
+   tbl.expanded2 <- replicate.rows.when.needed(tbl.tiny[2,,drop=FALSE])
+   
+   tbl.expanded <- replicate.rows.when.needed(tbl.tiny[1,,drop=FALSE])
      # do a bunch of checks here
-
-   list.of.tables <- apply(tbl.tiny, 1, replicate.rows.when.needed)
-   tbl.fixed <- do.call(rbind, list.of.tables)
-   checkEquals(dim(tbl.fixed), c(8, 5))
+   checkEquals(rownames(tbl.expanded), splitNames(rownames(tbl.tiny[1,,drop=FALSE])))
+   checkEquals(rownames(tbl.expanded2), splitNames(rownames(tbl.tiny[2,,drop=FALSE])))
+   
+   list.of.tables <- apply(tbl.tiny[,,drop=FALSE], 1, replicate.rows.when.needed)
+   tbl.result <- do.call(rbind, list.of.tables)
+   checkEquals(dim(tbl.result), c(8,5))
+   checkTrue(nrow(tbl.result) > nrow(tbl.tiny))
+   checkEquals((length(splitNames(rownames(tbl.tiny[1:nrow(tbl.tiny),])))), nrow(tbl.result))
 
 } # test_replicate.rows.when.needed
 #----------------------------------------------------------------------------------------------------
