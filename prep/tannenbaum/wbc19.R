@@ -59,5 +59,6 @@ displayBedTrack <- function(geneSymbol, shoulder=10000)
 
 
 } # displayBedTrack
+displayBedTrack("WBC19")
 #------------------------------------------------------------------------------------------------------------------------
 # displayBedTrack("WBC19")
