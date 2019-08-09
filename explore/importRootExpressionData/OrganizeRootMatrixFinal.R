@@ -10,7 +10,8 @@ runTests <- function()
 #----------------------------------------------------------------------------------------------------
 if(!exists("test.tbl"))
    load("test.tbl.RDAta")
-
+if(!exists("roots.tsv"))
+   read.table("roots.tsv", header=TRUE, sep="\t"
 #----------------------------------------------------------------------------------------------------
 eliminateDuplicateRows <- function(tbl)
 {
@@ -149,7 +150,6 @@ test_splitNamesRepeatRows <- function()
 #----------------------------------------------------------------------------------------------------
 expand.single.row.when.needed <- function(x)
 {
-   browser()
    stopifnot(nrow(x)==1)
    new.row.names <- splitNames(rownames(x[,,drop=FALSE]))
    total.row.count <- length(new.row.names)
@@ -208,10 +208,15 @@ test_expand.single.row.when.needed <- function()
 #   - mv Alias column to be row names
 #   - some rows are ;-separated orfs: duplicate them: do this one row at a time, aggregate and rbind
 #   - support testing and incremental development using optional paramater: numberOfRows to use
-do.it.all <- function(filename, numberOfRows=-1)
+do.it.all <- function(data_file, numberOfRows=-1)
 {
-   tbl.raw <- read.table(nrows=numberOfRows)
-   organizedTbl <- eliminateDuplicateRows(test.tbl)
+   browser()
+   tbl.Raw <- read.table(data_file, header=TRUE, sep="\t", nrows=numberOfRows)
+   #reads file
+   tbl.Organized <- eliminateDuplicateRows(tbl.raw)
+   #removes dupes; makes alias column the row names
+   tbl.Expanded <- expand.single.row.when.needed(tbl.Organized)
+   #expands table
 
    return(tbl.Expanded)
 
@@ -219,14 +224,16 @@ do.it.all <- function(filename, numberOfRows=-1)
 #----------------------------------------------------------------------------------------------------
 test_do.it.all <- function()
 {
-   message(sprintf("--- test_expand.single.row.when.needed"))
+   message(sprintf("--- test_do.it.all"))
+   tbl.small <- read.table("roots.tsv", header=TRUE, sep="\t", nrows=10)[,1:10]
+   tbl.good <- do.it.all(tbl.small)
 
-   tbl.good <- do.it.all("something.tsv", numberOfRows=10)
-
-   checkTrue(nrow(small.tbl) < nrow(do.it.all(small.tbl)))
-   checkEquals(dim(do.it.all(small.tbl)), c(12,10))
-   checkTrue(!grep(";", rownames(do.it.all(small.tbl))))
-   checkTrue(rownames(do.it.all(small.tbl)), rownamesOfTbl)
+   checkTrue(nrow(tbl.small) < nrow(tbl.good))
+   checkEquals(dim(tbl.good), c(12,8))
+   checkTrue(!grep(";", rownames(tbl.good)))
+   
+   tbl.rownames <- splitNames(rownames(eliminateDuplicateRows(tbl.small)))
+   checkTrue(rownames(tbl.good), tbl.rownamesl)
 
 }
 #----------------------------------------------------------------------------------------------------
