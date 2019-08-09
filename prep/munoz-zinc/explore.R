@@ -24,7 +24,7 @@ frd3.vector <- mtx["FRD3",]
 fivenum(frd3.vector) 
 # returns the minumum, lower-hinge, median, upper-hinge, and maximum values (there are 42 values) for the frd3 vector.
 plot(frd3.vector)   #
-different pattern from wbc19?
+#different pattern from wbc19?
 #^the plot for frd3 is more linear and indicates a relationship
 #^ as the sample positions/index increase, the matrix values decrease
 #^ all samples range between 6.9-9.4
