@@ -4,8 +4,8 @@ runTests <- function()
 {
    test_splitNames()
    test_eliminateDuplicateRows()
-   test_replicate.rows.when.needed()
-
+   test_expand.single.row.when.needed()
+   test_do.it.all()
 } # runTests
 #----------------------------------------------------------------------------------------------------
 if(!exists("test.tbl"))
@@ -147,36 +147,38 @@ test_splitNamesRepeatRows <- function()
 
 } # test_splitNamesRepeatRows
 #----------------------------------------------------------------------------------------------------
-replicate.rows.when.needed <- function(x)
+expand.single.row.when.needed <- function(x)
 {
-  new.row.names <- splitNames(rownames(x[,,drop=FALSE]))
-  total.row.count <- length(new.row.names)
+   browser()
+   stopifnot(nrow(x)==1)
+   new.row.names <- splitNames(rownames(x[,,drop=FALSE]))
+   total.row.count <- length(new.row.names)
 
-  if(total.row.count == 1)
+   if(total.row.count == 1)
      return(x)
 
     # we get here only if total.row.count > 1
 
-  tbl.expanded <- matrix(rep(t(x), total.row.count), ncol = ncol(x) , byrow = TRUE )
-  colnames(tbl.expanded) <- colnames(x)
-  rownames(tbl.expanded) <- new.row.names
+   tbl.expanded <- matrix(rep(t(x), total.row.count), ncol = ncol(x) , byrow = TRUE )
+   colnames(tbl.expanded) <- colnames(x)
+   rownames(tbl.expanded) <- new.row.names
 
-  return(tbl.expanded)
+   return(tbl.expanded)
 
-} # replicate.rows.when.needed
+} # expand.single.row.when.needed
 #----------------------------------------------------------------------------------------------------
-test_replicate.rows.when.needed <- function()
+test_expand.single.row.when.needed <- function()
 {
-   message(sprintf("--- test_replicate.rows.when.needed"))
+   message(sprintf("--- test_expand.single.row.when.needed"))
    stopifnot(exists("test.tbl"))
    tbl.fixed <- eliminateDuplicateRows(test.tbl)
    tbl.tiny <- as.matrix(tbl.fixed[1:6, 1:5])
 
        # row 2 of tbl.tiny has a simple single orf name, ATMG00840
-   tbl.expanded2 <- replicate.rows.when.needed(tbl.tiny[2,,drop=FALSE])
+   tbl.expanded2 <- expand.single.row.when.needed(tbl.tiny[2,,drop=FALSE])
    checkEquals(dim(tbl.expanded2), c(1, 5))
       # row 1 has a double orf name: ATMG00850;AT2G07682
-   tbl.expanded.1 <- replicate.rows.when.needed(tbl.tiny[1,,drop=FALSE])
+   tbl.expanded.1 <- expand.single.row.when.needed(tbl.tiny[1,,drop=FALSE])
    checkEquals(dim(tbl.expanded.1), c(2, 5))
    checkEquals(rownames(tbl.expanded.1), c("ATMG00850", "AT2G07682"))
 
@@ -185,12 +187,12 @@ test_replicate.rows.when.needed <- function()
    checkEquals(rownames(tbl.expanded2), splitNames(rownames(tbl.tiny[2,,drop=FALSE])))
 
      # now for a more complete and realistic test, iterate over the whole of the matrix,
-     # row by row, ucalling replicate.rows.when.needed  on each row.  since apply (an
+     # row by row, ucalling expand.single.row.when.needed  on each row.  since apply (an
      # otherwise sensible solution) drops row names, let's  try an old-fashioned for loop
 
    result <- list()
    for(i in 1:nrow(tbl.tiny)){
-      result[[i]] <- replicate.rows.when.needed(tbl.tiny[i,,drop=FALSE])
+      result[[i]] <- expand.single.row.when.needed(tbl.tiny[i,,drop=FALSE])
       }
 
    mtx.expanded <- do.call(rbind, result)
@@ -198,12 +200,35 @@ test_replicate.rows.when.needed <- function()
    expected.rownames <- unlist(strsplit(rownames(tbl.tiny), ";"))
    checkEquals(rownames(mtx.expanded), expected.rownames)
 
-} # test_replicate.rows.when.needed
+} # test_expand.single.row.when.needed
+#----------------------------------------------------------------------------------------------------
+do.it.all <- function(d)
+{
+   browser()
+   organizedTbl <- eliminateDuplicateRows(test.tbl)
+   tbl.Expanded <- apply(organizedTbl, 1, expand.single.row.when.needed)
+   return(tbl.Expanded)
+}
+#----------------------------------------------------------------------------------------------------
+test_do.it.all <- function()
+{
+   browser()
+   message(sprintf("--- test_expand.single.row.when.needed"))
+   
+   small.tbl <- tbl[1:10, 1:10]
+   rownamesOfTbl <- splitNames(rownames(small.tbl))
+   
+   checkTrue(nrow(small.tbl) < nrow(do.it.all(small.tbl)))
+   checkEquals(dim(do.it.all(small.tbl)), c(12,10))
+   checkTrue(!grep(";", rownames(do.it.all(small.tbl))))
+   checkTrue(rownames(do.it.all(small.tbl)), rownamesOfTbl)
+   
+}
 #----------------------------------------------------------------------------------------------------
 if(!interactive())
    runTests()
 #---------------------------------------------------------------------------------------------------
-replicate.rows.when.needed(tbl)
+# expand.single.row.when.needed(tbl)
 #error occurs. it states:
 #Error in dimnames(x) <- dn : 
    #length of 'dimnames' [1] not equal to array extent
