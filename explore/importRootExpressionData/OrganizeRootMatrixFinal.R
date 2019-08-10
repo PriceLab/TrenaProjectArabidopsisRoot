@@ -6,6 +6,7 @@ runTests <- function()
    test_eliminateDuplicateRows()
    test_expand.single.row.when.needed()
    test_do.it.all()
+   test_double.check()
 } # runTests
 #----------------------------------------------------------------------------------------------------
 if(!exists("test.tbl"))
@@ -232,7 +233,8 @@ do.it.all <- function(data_file, numberOfRows=-1)
 test_do.it.all <- function()
 {
    message(sprintf("--- test_do.it.all"))
-   tbl.small <- read.table("roots.tsv", header=TRUE, sep="\t", nrows=350)
+   filename <- "roots.tsv"
+   tbl.small <- read.table(filename, header=TRUE, sep="\t", nrows=350)
    tbl.small.organized <- eliminateDuplicateRows((tbl.small))
    tbl.good <- do.it.all("roots.tsv", numberOfRows = 350)
 
@@ -242,8 +244,51 @@ test_do.it.all <- function()
    
    tbl.rownames <- splitNames(rownames(eliminateDuplicateRows(tbl.small)))
    checkEquals(rownames(tbl.good), tbl.rownames)
+   
+      # now test each stage with the full 17770 row table freshly read from disk
+    tbl.final <- do.it.all(filename)
+    checkEquals(dim(tbl.final), c(18617, 1939))
+   originalRootData <- read.table(filen, header=TRUE, sep="\t")
+   checkEquals(nrow(originalRootData), 17770)
+   
 
 }
+#----------------------------------------------------------------------------------------------------
+test_double.check <- function()
+{
+   message(sprintf("---test_double.check"))
+   
+   originalRootData <- read.table("roots.tsv", header=TRUE, sep="\t")
+   checkEquals(nrow(originalRootData), 17770)
+   
+   
+   dim_originalRootData <- dim(originalRootData)
+   
+   organizedRootData <- eliminateDuplicateRows(originalRootData)
+     # eliminate just 144 
+   checkEquals(dim(organizedRootData), c(17626, 1939))
+   dim_organizedRootData <- dim(organizedRootData)
+   
+   entireRoot <- do.it.all("roots.tsv", numberOfRows = -1)
+   dim_entireRootData <- dim(entireRoot)
+   
+   # [1] stands for the rows
+   # [2] stands for the columns
+   
+   checkTrue(dim_organizedRootData[1] < dim_originalRootData[1])
+   #as expected from removing duplicate rows
+      
+   checkEquals(dim_organizedRootData[2], dim_originalRootData[2] - 2 )
+   #as expected from removing columns "ID" and "Alias"
+   
+   checkEquals(dim_entireRootData[2], dim_organizedRootData[2])
+   #no columns were removed/added so it should be the same
+   
+   checkTrue(dim_entireRootData[1] > dim_organizedRootData[1])
+   #as expected from expanding the rows with mulitple orf names
+   
+   
+}#test_double.check
 #----------------------------------------------------------------------------------------------------
 if(!interactive())
    runTests()
