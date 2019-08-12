@@ -1,0 +1,25 @@
+--- aluru.18617x1938.orfRowNames.RData
+   https://alurulab.cc.gatech.edu/arabidopsis-networks
+
+   In this page, we have made available the input data files and the results of our analysis 11,760
+   microarray experiments on the model plant Arabidopsis thaliana drawn from public repositories. We
+   have categorized these experiments under seven different tissue types and five different
+   experimental conditions. Using this data, we generate genome scale networks of Arabidopsis using
+   three different methods - mutual information, Pearson correlation and Gaussian graphical
+   modeling.
+
+   Description of Data Files
+
+   In this page, we have made available both the datasets and the generated output networks.
+
+   Datasets All the twelve classified datasets (7 tissues ; 5 conditions) are can be downloaded from
+   here . The dataset files are of the "exp" format. exp is a plain text format. It has (No. of
+   experiments + 2) columns and (No. of genes + 3) rows. The first two columns contain the probe set
+   name and the locus id (Arabidopsis Genome Identifier or AGI). From the third column onwards, each
+   column contains the expression values corresponding to an experiment.
+
+   The rows are organized as follows: First row is a header; second and third rows are
+   descriptions. Starting from the fourth row, each row is a vector to the expression values
+   corresponding to a gene. The first two entries in each row are the probe id and the AGI (of the
+   form ATXGXXXX) are respectively. The locus id value can use used to select the rows corresponding
+   to the genes of interest.
