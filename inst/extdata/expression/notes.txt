@@ -23,3 +23,7 @@
    corresponding to a gene. The first two entries in each row are the probe id and the AGI (of the
    form ATXGXXXX) are respectively. The locus id value can use used to select the rows corresponding
    to the genes of interest.
+
+
+   tanjanay's path to her script, and a brief summary go here...
+   
