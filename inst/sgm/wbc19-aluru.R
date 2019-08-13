@@ -14,6 +14,13 @@ geneOntology <- function(orf)
 
 } # geneOntology
 #------------------------------------------------------------------------------------------------------------------------
+runTests <- function()
+{
+  test_geneOntology()
+  test_goEnrichment()
+  
+} # runTests
+#------------------------------------------------------------------------------------------------------------------------
 test_geneOntology <- function()
 {
    message(sprintf("--- test_geneOntology"))
@@ -75,7 +82,6 @@ if(!exists("tp")) {
 
 genome <- "tair10"
 getExpressionMatrixNames(tp)
-mtx <- getExpressionMatrix(tp, "munoz.zinc.18993x42.canonicalRowNames")
 mtx <- getExpressionMatrix(tp, "aluru.18617x1938.orfRowNames")
 targetGene <- canonicalizeName(tp, "WBC19")
 
@@ -110,4 +116,7 @@ tbl.model.2 <- x$model[1:10,]
 tf.symbols <- unlist(lapply(tbl.model.2$gene, function(tf) getGeneNames(tp, tf)$symbol))
 tbl.model.2$symbol <- tf.symbols
 
+#------------------------------------------------------------------------------------------------------------------------
+if(!interactive())
+  runTests()
 
