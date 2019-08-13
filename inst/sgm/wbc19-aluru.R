@@ -14,7 +14,6 @@ geneOntology <- function(orf)
 
 } # geneOntology
 #------------------------------------------------------------------------------------------------------------------------
-goEnrichment
 test_geneOntology <- function()
 {
    message(sprintf("--- test_geneOntology"))
