@@ -26,4 +26,16 @@
 
 
    tanjanay's path to her script, and a brief summary go here...
+   Path: /Users/user/github/TrenaProjectArabidopsisRoot/explore/importRootExpressionData/
+   OrganizeRootMatrixFinal.R
+   The "root" tissue dataset from Aluru's lab was used to gather gene expression data useful for
+   modeling regulatory networks in Arabidopsis thaliana using trena. However, the data required
+   organization before loading the expression matrix. First, the second and third rows of the
+   dataset were removed (descriptions of dataset); these changes were saved in the tsv file 
+   "roots.tsv". Using the R-script above, duplicates of AGI with the lowest variance were removed,
+   the AGI column was changed to the rownames of the dataset, and the ID and AGI columns were 
+   removed so only gene expression data remained. Additionally, there were rownames with multiple 
+   AGI so a function was created to expand the matrix by spliting rownames with multiple (different)
+   AGI names and repeating these rows.  
+   
    
