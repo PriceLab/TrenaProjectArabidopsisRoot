@@ -2,6 +2,7 @@ library(TrenaProjectArabidopsisRoot)
 library(RUnit)
 library(MotifDb)
 library(trenaSGM)
+library(org.At.tair.db)
 #------------------------------------------------------------------------------------------------------------------------
 if(!exists("tp")) {
    message(sprintf("--- creating instance of TrenaProjectArabidopsisRoot"))
@@ -233,7 +234,7 @@ test_buildSingleGeneModel_WBC19 <- function()
    tbl.model <- x$model[1:10,]
        # add geneSymbols, easier for humans to read
    tbl.model$geneSymbol <- unlist(lapply(tbl.model$gene, function(gene) getGeneNames(tp, gene)$symbol))
-   check
+
    checkEquals(x$regulatoryRegions, data.frame())
 
      #------------------------------------------------------------------------------
