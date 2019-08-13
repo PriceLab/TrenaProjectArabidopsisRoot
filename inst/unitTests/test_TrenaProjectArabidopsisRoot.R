@@ -1,6 +1,7 @@
 library(TrenaProjectArabidopsisRoot)
 library(RUnit)
 library(MotifDb)
+library(trenaSGM)
 #------------------------------------------------------------------------------------------------------------------------
 if(!exists("tp")) {
    message(sprintf("--- creating instance of TrenaProjectArabidopsisRoot"))
@@ -24,6 +25,7 @@ runTests <- function()
    test_expressionMatrices()
    test_setTargetGene()
    test_canonicalizeName()
+   test_buildSingleGeneModel_WBC19()
 
 } # runTests
 #------------------------------------------------------------------------------------------------------------------------
@@ -192,6 +194,70 @@ test_findCandidateTranscriptionFactorsByMotifInSequence <- function()
    checkTrue(all(c("AT5G62165", "AT1G80840") %in% tbl.tfs$orf))
 
 } # test_findCandidateTranscriptionFactorsByMotifInSequence
+#------------------------------------------------------------------------------------------------------------------------
+test_buildSingleGeneModel_WBC19 <- function()
+{
+   message(sprintf("--- test_buildSingleGeneModel_WBC19"))
+
+   genome <- "tair10"
+   mtx <- getExpressionMatrix(tp, "munoz.zinc.18993x42.canonicalRowNames")
+
+   targetGene <- canonicalizeName(tp, "WBC19")
+
+     #--------------------------------------------------------------------------
+     # first model: only 18 TFs with >= 95% motif match in short root-specific
+     # ATAC-seq about 2k upstream of WBC19
+     #--------------------------------------------------------------------------
+
+   tbl.atac <- data.frame(chrom=rep("Chr3", 2),
+                          start=c(20438126,20438543),
+                          end=c(20438246,20438984),
+                          stringsAsFactors=FALSE)
+   tbl.tfs <- findCandidateTranscriptionFactorsByMotifInSequence(tp, tbl.atac, 95L)
+   candidate.tfs <- sort(unique(tbl.tfs$orf))
+   length(candidate.tfs)
+
+   recipe <- list(title="WBC19",
+                  type="noDNA.tfsSupplied",
+                  matrix=mtx,
+                  candidateTFs=candidate.tfs,
+                  tfPool=getAllTranscriptionFactors(tp, "MotifDb"),
+                  tfPrefilterCorrelation=0.2,
+                  annotationDbFile=dbfile(org.At.tair.db),
+                  orderModelByColumn="rfScore",
+                  solverNames=c("lasso", "lassopv", "pearson", "randomForest", "ridge", "spearman"),
+                  quiet=TRUE)
+
+   builder <- NoDnaModelBuilder(genome, targetGene, recipe, quiet=TRUE)
+   x <- build(builder)
+   tbl.model <- x$model[1:10,]
+       # add geneSymbols, easier for humans to read
+   tbl.model$geneSymbol <- unlist(lapply(tbl.model$gene, function(gene) getGeneNames(tp, gene)$symbol))
+   checkEquals(x$regulatoryRegions, data.frame())
+
+     #------------------------------------------------------------------------------
+     # second model: 48 TFs with >= 95% motif match within traditional 2kb promoter.
+     # no ATAC-seq information used.
+     #------------------------------------------------------------------------------
+
+   tbl.promoter <- data.frame(chrom="Chr3", start=20436000, end=20438000, stringsAsFactors=FALSE)
+   tbl.tfs <- findCandidateTranscriptionFactorsByMotifInSequence(tp, tbl.promoter, 95L)
+   candidate.tfs <- sort(unique(tbl.tfs$orf))
+   length(candidate.tfs)
+
+     #--------------------------------------------------------------------------
+     # just one change needed: substitute in the new largner number of TFs
+     #--------------------------------------------------------------------------
+
+   recipe$candidateTFs=candidate.tfs
+   builder <- NoDnaModelBuilder(genome, targetGene,  recipe, quiet=TRUE)
+   x2 <- build(builder)
+   tbl.model.2 <- x2$model
+   tbl.model.2$geneSymbol <- unlist(lapply(tbl.model.2$gene, function(gene) getGeneNames(tp, gene)$symbol))
+
+   dim(tbl.model.2)
+
+} # test_buildSingleGeneModel_WBC19
 #------------------------------------------------------------------------------------------------------------------------
 if(!interactive())
    runTests()

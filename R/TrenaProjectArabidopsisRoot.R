@@ -5,7 +5,7 @@
 #' @importFrom trena MotifMatcher
 #' @importMethodsFrom trena findMatchesByChromosomalRegion, MotifMatcher
 #' @importFrom AnnotationDbi select
-#' @import org.Hs.eg.db
+#' @import org.At.tair.db
 #'
 #' @title TrenaProjectArabidopsisRoot-class
 #'
