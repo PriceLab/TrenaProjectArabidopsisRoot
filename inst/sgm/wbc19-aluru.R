@@ -116,7 +116,7 @@ tbl.model <- x$model[1:10,]
 tf.symbols <- unlist(lapply(tbl.model$gene, function(tf) getGeneNames(tp, tf)$symbol))
 tbl.model$symbol <- tf.symbols
 
-#tbl.model:
+# tbl.model:
 #         gene   betaLasso   lassoPValue pearsonCoeff   rfScore   betaRidge spearmanCoeff bindingSites symbol
 # 5  AT3G59060  0.25182969 7.586023e-257    0.6738150 1301.6266  0.17793969     0.5077358           NA   PIF5
 # 6  AT4G00050  0.25848974 1.790158e-129    0.5765029  738.1581  0.23987441     0.4916015           NA  UNE10
@@ -160,7 +160,7 @@ tbl.model.2 <- x2$model[1:10,]
 tf.symbols <- unlist(lapply(tbl.model.2$gene, function(tf) getGeneNames(tp, tf)$symbol))
 tbl.model.2$symbol <- tf.symbols
 
-#tbl.model.2
+# tbl.model.2
 #         gene   betaLasso   lassoPValue pearsonCoeff   rfScore   betaRidge spearmanCoeff bindingSites    symbol
 # 5  AT4G14465 -0.46401927 1.919310e-162   -0.5628267 1331.0327 -0.35798325    -0.3313744           NA     AHL20
 # 10 AT5G62165 -0.26067798 8.382164e-104   -0.4991596  871.5585 -0.22696959    -0.3849297           NA     AGL42
@@ -215,6 +215,11 @@ tbl.model.3$symbol <- tf.symbols
 # 1  AT1G64620  0.05390654  1.121712e-02   -0.1025043  269.3130  0.10217146    -0.1231658           NA AT1G64620
 # 3  AT2G37590  0.00000000  1.613487e-01   -0.2068212  250.8909 -0.09618521    -0.1980168           NA    DOF2.4
 # 2  AT1G80840  0.02794550  1.308692e-02    0.1509693  242.7149  0.08498833     0.1306107           NA    WRKY40
+
+# side note: AGL42 is within the top 5 among all 3 models (repressor)
+# another note: AGL40 is the first one among models 2 & 3
+
+
 #------------------------------------------------------------------------------------------------------------------------
 if(!interactive())
   runTests()
