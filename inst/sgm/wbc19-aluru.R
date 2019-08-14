@@ -177,6 +177,8 @@ tbl.model.2$symbol <- tf.symbols
           #------------------------------------------------------------------------------
           # third model: 36 TFs with >= 95% motif match within 1000kb (each) promoter.
           #------------------------------------------------------------------------------
+
+
 tbl.atac <- data.frame(chrom=rep("Chr3", 2),
                        start=c(20434500,20436000),
                        end=c(20435500,20437000),
@@ -218,7 +220,52 @@ tbl.model.3$symbol <- tf.symbols
 
 # side note: AGL42 is within the top 5 among all 3 models (repressor)
 # another note: AGL40 is the first one among models 2 & 3
+# make sure to review the others as well
 
+          #------------------------------------------------------------------------------
+          # fourth model: 19 TFs with >= 95% motif match within 1200kb (each) promoter.
+          #------------------------------------------------------------------------------
+
+
+tbl.atac <- data.frame(chrom=rep("Chr3", 2),
+                       start=c(20432000,20433210),
+                       end=c(20433200,20434410),
+                       stringsAsFactors=FALSE)
+tbl.tfs <- findCandidateTranscriptionFactorsByMotifInSequence(tp, tbl.atac, 95L)
+candidate.tfs <- sort(unique(tbl.tfs$orf))
+length(candidate.tfs)
+#side note: next model, go back to around the third model's region.
+
+recipe <- list(title="WBC19",
+               type="noDNA.tfsSupplied",
+               matrix=mtx,
+               candidateTFs=candidate.tfs,
+               tfPool=getAllTranscriptionFactors(tp, "MotifDb"),
+               tfPrefilterCorrelation=0.1,
+               annotationDbFile=dbfile(org.At.tair.db),
+               orderModelByColumn="rfScore",
+               solverNames=c("lasso", "lassopv", "pearson", "randomForest", "ridge", "spearman"),
+               quiet=TRUE)
+
+builder <- NoDnaModelBuilder(genome, targetGene, recipe, quiet=TRUE)
+x4 <- build(builder)
+lapply(x4, dim)
+tbl.model.4 <- x4$model[1:10,]
+tf.symbols <- unlist(lapply(tbl.model.4$gene, function(tf) getGeneNames(tp, tf)$symbol))
+tbl.model.4$symbol <- tf.symbols
+
+# tbl.model.4
+#         gene   betaLasso   lassoPValue pearsonCoeff   rfScore   betaRidge spearmanCoeff bindingSites    symbol
+# 7  AT4G14465 -0.63306716 1.919310e-162   -0.5628267 1372.8482 -0.44939720    -0.3313744           NA     AHL20
+# 9  AT5G60200 -0.23040752  9.592281e-32   -0.3877858  673.3668 -0.24152133    -0.3551172           NA    DOF5.3
+# 1  AT1G52150 -0.01352807  3.660479e-02   -0.2822424  493.6272 -0.10277135    -0.3354909           NA   ATHB-15
+# 4  AT2G22430  0.53927909  3.009286e-43    0.3242114  481.4268  0.48990652     0.2671454           NA    ATHB-6
+# 10 AT5G65590  0.19838070  5.449207e-39    0.3535122  454.8653  0.19894077     0.2939522           NA AT5G65590
+# 6  AT3G01470  0.00000000  9.838639e-01   -0.2254802  327.7194 -0.10693530    -0.1848806           NA    ATHB-1
+# 2  AT1G64620  0.04547039  1.688527e-02   -0.1025043  292.8133  0.10958571    -0.1231658           NA AT1G64620
+# 5  AT2G37590  0.00000000  5.330965e-01   -0.2068212  261.5152 -0.08311396    -0.1980168           NA    DOF2.4
+# 8  AT5G39660 -0.03144685  5.430603e-03   -0.2213106  254.0163 -0.12676544    -0.1426431           NA      CDF2
+# 3  AT1G80840  0.00000000  3.945345e-01    0.1509693  252.7218  0.03454721     0.1306107           NA    WRKY40
 
 #------------------------------------------------------------------------------------------------------------------------
 if(!interactive())
