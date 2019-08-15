@@ -267,6 +267,117 @@ tbl.model.4$symbol <- tf.symbols
 # 8  AT5G39660 -0.03144685  5.430603e-03   -0.2213106  254.0163 -0.12676544    -0.1426431           NA      CDF2
 # 3  AT1G80840  0.00000000  3.945345e-01    0.1509693  252.7218  0.03454721     0.1306107           NA    WRKY40
 
+          #------------------------------------------------------------------------------
+          # fifth model: 30 TFs with >= 95% motif match within 1500 (each) promoter.
+          #------------------------------------------------------------------------------
+
+tbl.atac <- data.frame(chrom=rep("Chr3", 2),
+                       start=c(22532400,22538210),
+                       end=c(22533900,22539910),
+                       stringsAsFactors=FALSE)
+tbl.tfs <- findCandidateTranscriptionFactorsByMotifInSequence(tp, tbl.atac, 95L)
+candidate.tfs <- sort(unique(tbl.tfs$orf))
+length(candidate.tfs)
+
+recipe <- list(title="WBC19",
+               type="noDNA.tfsSupplied",
+               matrix=mtx,
+               candidateTFs=candidate.tfs,
+               tfPool=getAllTranscriptionFactors(tp, "MotifDb"),
+               tfPrefilterCorrelation=0.1,
+               annotationDbFile=dbfile(org.At.tair.db),
+               orderModelByColumn="rfScore",
+               solverNames=c("lasso", "lassopv", "pearson", "randomForest", "ridge", "spearman"),
+               quiet=TRUE)
+
+builder <- NoDnaModelBuilder(genome, targetGene, recipe, quiet=TRUE)
+x5 <- build(builder)
+lapply(x5, dim)
+tbl.model.5 <- x5$model[1:10,]
+tf.symbols <- unlist(lapply(tbl.model.5$gene, function(tf) getGeneNames(tp, tf)$symbol))
+tbl.model.5$symbol <- tf.symbols
+
+# tbl.model.5
+#         gene   betaLasso   lassoPValue pearsonCoeff   rfScore   betaRidge spearmanCoeff bindingSites    symbol
+# 8  AT4G14465 -0.45126281 1.919310e-162   -0.5628267 1217.9599 -0.33094480    -0.3313744           NA     AHL20
+# 4  AT2G01760  0.35079119  1.811735e-68    0.4259098  591.9681  0.31450068     0.3974638           NA     ARR14
+# 9  AT4G31920 -0.41681921  2.657399e-51   -0.3963221  578.9558 -0.38395182    -0.3279602           NA     ARR10
+# 12 AT5G60200 -0.21672612  2.056503e-33   -0.3877858  526.6647 -0.22047585    -0.3551172           NA    DOF5.3
+# 2  AT1G67710 -0.04803401  3.653619e-14   -0.3991527  319.9506 -0.09684702    -0.3220879           NA     ARR11
+# 13 AT5G65590  0.14140722  6.260262e-34    0.3535122  297.9758  0.15024399     0.2939522           NA AT5G65590
+# 10 AT4G40060  0.00000000  2.658003e-01   -0.2832086  235.4189 -0.01086425    -0.2614751           NA   ATHB-16
+# 1  AT1G64620  0.03707026  1.295114e-02   -0.1025043  207.6641  0.10161573    -0.1231658           NA AT1G64620
+# 5  AT2G37590 -0.04281820  3.412511e-03   -0.2068212  200.8512 -0.14316299    -0.1980168           NA    DOF2.4
+# 11 AT5G39660 -0.08074957  4.412580e-06   -0.2213106  191.9243 -0.14452532    -0.1426431           NA      CDF2
+
+          #------------------------------------------------------------------------------
+          # sixth model:  TFs with >= 95% motif match within 1000 (each) promoter.
+          #------------------------------------------------------------------------------
+tbl.atac <- data.frame(chrom=rep("Chr3", 2),
+                       start=c(13532400,1353710),
+                       end=c(13533400,13534710),
+                       stringsAsFactors=FALSE)
+tbl.tfs <- findCandidateTranscriptionFactorsByMotifInSequence(tp, tbl.atac, 95L)
+candidate.tfs <- sort(unique(tbl.tfs$orf))
+length(candidate.tfs)
+
+recipe <- list(title="WBC19",
+               type="noDNA.tfsSupplied",
+               matrix=mtx,
+               candidateTFs=candidate.tfs,
+               tfPool=getAllTranscriptionFactors(tp, "MotifDb"),
+               tfPrefilterCorrelation=0.1,
+               annotationDbFile=dbfile(org.At.tair.db),
+               orderModelByColumn="rfScore",
+               solverNames=c("lasso", "lassopv", "pearson", "randomForest", "ridge", "spearman"),
+               quiet=TRUE)
+
+builder <- NoDnaModelBuilder(genome, targetGene, recipe, quiet=TRUE)
+x6 <- build(builder)
+lapply(x6, dim)
+tbl.model.6 <- x6$model[1:10,]
+tf.symbols <- unlist(lapply(tbl.model.6$gene, function(tf) getGeneNames(tp, tf)$symbol))
+tbl.model.6$symbol <- tf.symbols
+
+
+
+#Get high expression data
+plotWBC19 <- plot((mtx[c("AT3G55130"),]), (mtx[c("AT3G59060"),]))
+new.wbc.vector <- t(wbc19.vector)
+number1 <- new.wbc.vector[(new.wbc.vector[,1] > 2),]
+number2 <- number1[(number1[,2] > 2),]
+plot(number2)
+highExpressionWBC19 <- t(number2)
+rownames(highExpressionWBC19)
+mtx2 <- highExpressionWBC19
+#created matrix of high expression data
+
+tbl.atac <- data.frame(chrom=rep("Chr3", 2),
+                       start=c(22632400,22638210),
+                       end=c(22633900,22639910),
+                       stringsAsFactors=FALSE)
+tbl.tfs <- findCandidateTranscriptionFactorsByMotifInSequence(tp, tbl.atac, 95L)
+candidate.tfs <- sort(unique(tbl.tfs$orf))
+length(candidate.tfs)
+
+recipe <- list(title="WBC19",
+               type="noDNA.tfsSupplied",
+               matrix=mtx2,
+               candidateTFs=candidate.tfs,
+               tfPool=getAllTranscriptionFactors(tp, "MotifDb"),
+               tfPrefilterCorrelation=0.1,
+               annotationDbFile=dbfile(org.At.tair.db),
+               orderModelByColumn="rfScore",
+               solverNames=c("lasso", "lassopv", "pearson", "randomForest", "ridge", "spearman"),
+               quiet=TRUE)
+
+builder <- NoDnaModelBuilder(genome, targetGene, recipe, quiet=TRUE)
+x7 <- build(builder)
+lapply(x7, dim)
+tbl.model.7 <- x7$model[1:10,]
+tf.symbols <- unlist(lapply(tbl.model.7$gene, function(tf) getGeneNames(tp, tf)$symbol))
+tbl.model.7$symbol <- tf.symbols
+
 #------------------------------------------------------------------------------------------------------------------------
 if(!interactive())
   runTests()
