@@ -693,6 +693,291 @@ tbl.model.13$symbol <- tf.symbols
 
 #no regulatory regions yet
 
+          #------------------------------------------------------------------------------
+          # 14th model: 42 TFs with >= 95% motif match within 1500 (each) promoter.
+          #------------------------------------------------------------------------------
+
+tbl.atac <- data.frame(chrom=rep("Chr3", 2),
+                       start=c(20423050,20427384),
+                       end=c(20424550,20428884),
+                       stringsAsFactors=FALSE)
+tbl.tfs <- findCandidateTranscriptionFactorsByMotifInSequence(tp, tbl.atac, 95L)
+candidate.tfs <- sort(unique(tbl.tfs$orf))
+length(candidate.tfs)
+
+recipe <- list(title="WBC19",
+               type="noDNA.tfsSupplied",
+               matrix=mtx3,
+               candidateTFs=candidate.tfs,
+               tfPool=getAllTranscriptionFactors(tp, "MotifDb"),
+               tfPrefilterCorrelation=0.1,
+               annotationDbFile=dbfile(org.At.tair.db),
+               orderModelByColumn="rfScore",
+               solverNames=c("lasso", "lassopv", "pearson", "randomForest", "ridge", "spearman"),
+               quiet=TRUE)
+
+builder <- NoDnaModelBuilder(genome, targetGene, recipe, quiet=TRUE)
+x14 <- build(builder)
+lapply(x14, dim)
+tbl.model.14 <- x14$model[1:10,]
+tf.symbols <- unlist(lapply(tbl.model.14$gene, function(tf) getGeneNames(tp, tf)$symbol))
+tbl.model.14$symbol <- tf.symbols
+
+# tbl.model.14
+#         gene    betaLasso lassoPValue pearsonCoeff   rfScore    betaRidge spearmanCoeff bindingSites    symbol
+# 10 AT4G14465 -0.032987913  0.02604191   -0.3113506 0.5811695 -0.032779964   -0.28038415           NA     AHL20
+# 8  AT3G47500  0.000000000  0.10256329    0.2092642 0.5284426  0.038234129    0.29901561           NA      CDF3
+# 3  AT1G69780  0.000000000  0.47126347   -0.1558149 0.4558065 -0.020464919   -0.24043217           NA    ATHB13
+# 17 AT5G62940  0.000000000  0.44899545    0.1423515 0.4496875  0.019987754    0.08821128           NA    DOF5.6
+# 7  AT3G06740  0.070921388  0.01895477    0.3307985 0.4338415  0.057434221    0.27352397           NA    GATA15
+# 11 AT4G17460  0.009649258  0.04073222    0.3055506 0.4336755  0.024513398    0.24264106           NA      HAT1
+# 2  AT1G64620  0.000000000  0.11742320    0.2198560 0.4100220  0.060567525    0.21949580           NA AT1G64620
+# 12 AT4G37180 -0.025091221  0.05295391   -0.2804712 0.3833676 -0.044010154   -0.29142857           NA AT4G37180
+# 15 AT5G16560  0.000000000  0.95486682    0.1300772 0.3681782  0.006399682    0.15668667           NA       KAN
+# 5  AT2G46680  0.000000000  0.10509509   -0.2534576 0.3379815 -0.017638285   -0.26261705           NA    ATHB-7
+
+
+          #---------------------------------------------------------------------------------------
+          # 15th model: 20 TFs with >= 95% motif match within 2000 upstream, 500 downstream of TSS
+          #---------------------------------------------------------------------------------------
+
+tbl.atac <- data.frame(chrom=rep("Chr3", 2),
+                       start=c(20432106,20434107),
+                       end=c(20434106,20434607),
+                       stringsAsFactors=FALSE)
+tbl.tfs <- findCandidateTranscriptionFactorsByMotifInSequence(tp, tbl.atac, 95L)
+candidate.tfs <- sort(unique(tbl.tfs$orf))
+length(candidate.tfs)
+
+recipe <- list(title="WBC19",
+               type="noDNA.tfsSupplied",
+               matrix=mtx3,
+               candidateTFs=candidate.tfs,
+               tfPool=getAllTranscriptionFactors(tp, "MotifDb"),
+               tfPrefilterCorrelation=0.1,
+               annotationDbFile=dbfile(org.At.tair.db),
+               orderModelByColumn="rfScore",
+               solverNames=c("lasso", "lassopv", "pearson", "randomForest", "ridge", "spearman"),
+               quiet=TRUE)
+
+builder <- NoDnaModelBuilder(genome, targetGene, recipe, quiet=TRUE)
+x15 <- build(builder)
+lapply(x15, dim)
+tbl.model.15 <- x15$model[1:10,]
+tf.symbols <- unlist(lapply(tbl.model.15$gene, function(tf) getGeneNames(tp, tf)$symbol))
+tbl.model.15$symbol <- tf.symbols
+
+#         gene    betaLasso lassoPValue pearsonCoeff   rfScore   betaRidge spearmanCoeff bindingSites    symbol
+# 6  AT3G54810 -0.039787610  0.04365073   -0.2940763 0.6846830 -0.06001076   -0.20384154           NA     GATA8
+# 5  AT3G06740  0.124765638  0.01895477    0.3307985 0.6674693  0.08295289    0.27352397           NA    GATA15
+# 10 AT5G62940  0.000000000  0.41461791    0.1423515 0.6670734  0.02197803    0.08821128           NA    DOF5.6
+# 7  AT4G14465 -0.035092534  0.02604191   -0.3113506 0.6431163 -0.03020385   -0.28038415           NA     AHL20
+# 2  AT1G69780  0.000000000  0.91517751   -0.1558149 0.6375511 -0.01767389   -0.24043217           NA    ATHB13
+# 1  AT1G64620  0.003497219  0.12537262    0.2198560 0.6301531  0.06288908    0.21949580           NA AT1G64620
+# 9  AT5G16560  0.000000000  0.54146029    0.1300772 0.5653065  0.01288556    0.15668667           NA       KAN
+# 11 AT5G65590  0.000000000  0.53350580   -0.1758766 0.4449672 -0.01152127   -0.30208884           NA AT5G65590
+# 3  AT1G80840  0.000000000  0.44366311   -0.1730834 0.3949913 -0.01562107   -0.14900360           NA    WRKY40
+# 4  AT3G01470  0.000000000  0.85935301   -0.1515070 0.3905654 -0.01787426   -0.13373349           NA    ATHB-1
+
+            #----------------------------------------------------------------------------------------
+            # 16th model: 20 TFs with >= 95% motif match within 2000 upstream, 500 downstream of TSS
+            # same region as #15 on atac.seq; Use bigger matrix
+            #----------------------------------------------------------------------------------------
+
+tbl.atac <- data.frame(chrom=rep("Chr3", 2),
+                       start=c(20432112,20434113),
+                       end=c(20434112,20434613),
+                       stringsAsFactors=FALSE)
+tbl.tfs <- findCandidateTranscriptionFactorsByMotifInSequence(tp, tbl.atac, 95L)
+candidate.tfs <- sort(unique(tbl.tfs$orf))
+length(candidate.tfs)
+
+recipe <- list(title="WBC19",
+               type="noDNA.tfsSupplied",
+               matrix=mtx,
+               candidateTFs=candidate.tfs,
+               tfPool=getAllTranscriptionFactors(tp, "MotifDb"),
+               tfPrefilterCorrelation=0.1,
+               annotationDbFile=dbfile(org.At.tair.db),
+               orderModelByColumn="rfScore",
+               solverNames=c("lasso", "lassopv", "pearson", "randomForest", "ridge", "spearman"),
+               quiet=TRUE)
+
+builder <- NoDnaModelBuilder(genome, targetGene, recipe, quiet=TRUE)
+x16 <- build(builder)
+lapply(x16, dim)
+tbl.model.16 <- x16$model[1:10,]
+tf.symbols <- unlist(lapply(tbl.model.16$gene, function(tf) getGeneNames(tp, tf)$symbol))
+tbl.model.16$symbol <- tf.symbols
+
+#         gene    betaLasso   lassoPValue pearsonCoeff   rfScore   betaRidge spearmanCoeff bindingSites    symbol
+# 7  AT4G14465 -0.631679182 1.919310e-162   -0.5628267 1392.8188 -0.45797827    -0.3313744           NA     AHL20
+# 9  AT5G60200 -0.226439315  9.592281e-32   -0.3877858  663.6387 -0.24379551    -0.3551172           NA    DOF5.3
+# 1  AT1G52150 -0.007069971  3.660479e-02   -0.2822424  510.0015 -0.10189183    -0.3354909           NA   ATHB-15
+# 4  AT2G22430  0.534924218  3.009286e-43    0.3242114  484.3623  0.49642149     0.2671454           NA    ATHB-6
+# 10 AT5G65590  0.196341104  5.449207e-39    0.3535122  453.4247  0.20074867     0.2939522           NA AT5G65590
+# 6  AT3G01470  0.000000000  9.838639e-01   -0.2254802  318.4881 -0.10405340    -0.1848806           NA    ATHB-1
+# 2  AT1G64620  0.032505573  1.688527e-02   -0.1025043  291.1077  0.11394430    -0.1231658           NA AT1G64620
+# 5  AT2G37590  0.000000000  5.330965e-01   -0.2068212  260.5657 -0.08101563    -0.1980168           NA    DOF2.4
+# 8  AT5G39660 -0.026584270  5.430603e-03   -0.2213106  253.8812 -0.12570706    -0.1426431           NA      CDF2
+# 3  AT1G80840  0.000000000  3.945345e-01    0.1509693  251.0913  0.03387059     0.1306107           NA    WRKY40
+
+#with mtx3:
+#         gene   betaLasso lassoPValue pearsonCoeff   rfScore   betaRidge spearmanCoeff bindingSites    symbol
+# 6  AT3G54810 -0.03167221  0.04365073   -0.2940763 0.8106728 -0.05785286   -0.20384154           NA     GATA8
+# 2  AT1G69780  0.00000000  0.91517751   -0.1558149 0.6819254 -0.01714176   -0.24043217           NA    ATHB13
+# 10 AT5G62940  0.00000000  0.41461791    0.1423515 0.6513227  0.02122323    0.08821128           NA    DOF5.6
+# 7  AT4G14465 -0.02996968  0.02604191   -0.3113506 0.6449731 -0.02901716   -0.28038415           NA     AHL20
+# 5  AT3G06740  0.10799807  0.01895477    0.3307985 0.6422672  0.07991416    0.27352397           NA    GATA15
+# 9  AT5G16560  0.00000000  0.54146029    0.1300772 0.5825086  0.01236389    0.15668667           NA       KAN
+# 1  AT1G64620  0.00000000  0.12537262    0.2198560 0.5129569  0.06036687    0.21949580           NA AT1G64620
+# 11 AT5G65590  0.00000000  0.53350580   -0.1758766 0.4958118 -0.01116943   -0.30208884           NA AT5G65590
+# 8  AT5G03790  0.00000000  0.18322862   -0.1720009 0.4236046 -0.01437446   -0.20096038           NA   ATHB-51
+# 3  AT1G80840  0.00000000  0.44366311   -0.1730834 0.4227791 -0.01505340   -0.14900360           NA    WRKY40
+
+          #----------------------------------------------------------------------------------------
+          # 17th model: 28 TFs with >= 95% motif match within 2000 upstream, 2000 downstream of TSS
+          # same region as #15 on atac.seq; Use bigger matrix
+          #----------------------------------------------------------------------------------------
+
+tbl.atac <- data.frame(chrom=rep("Chr3", 2),
+                       start=c(20432112,20434113),
+                       end=c(20434112,20436113),
+                       stringsAsFactors=FALSE)
+tbl.tfs <- findCandidateTranscriptionFactorsByMotifInSequence(tp, tbl.atac, 95L)
+candidate.tfs <- sort(unique(tbl.tfs$orf))
+length(candidate.tfs)
+
+recipe <- list(title="WBC19",
+               type="noDNA.tfsSupplied",
+               matrix=mtx,
+               candidateTFs=candidate.tfs,
+               tfPool=getAllTranscriptionFactors(tp, "MotifDb"),
+               tfPrefilterCorrelation=0.1,
+               annotationDbFile=dbfile(org.At.tair.db),
+               orderModelByColumn="rfScore",
+               solverNames=c("lasso", "lassopv", "pearson", "randomForest", "ridge", "spearman"),
+               quiet=TRUE)
+
+builder <- NoDnaModelBuilder(genome, targetGene, recipe, quiet=TRUE)
+x17 <- build(builder)
+lapply(x17, dim)
+tbl.model.17 <- x17$model[1:10,]
+tf.symbols <- unlist(lapply(tbl.model.17$gene, function(tf) getGeneNames(tp, tf)$symbol))
+tbl.model.17$symbol <- tf.symbols
+
+#         gene   betaLasso   lassoPValue pearsonCoeff   rfScore   betaRidge spearmanCoeff bindingSites    symbol
+# 9  AT4G14465 -0.41358299 1.919310e-162   -0.5628267 1103.0008 -0.30944162    -0.3313744           NA     AHL20
+# 13 AT5G62165 -0.21833735 8.382164e-104   -0.4991596  663.4349 -0.19320224    -0.3849297           NA     AGL42
+# 2  AT1G53160  0.16486489  1.379180e-46    0.3917817  474.6536  0.16639273     0.3554472           NA      SPL4
+# 10 AT5G18830 -0.30371523  7.029777e-31   -0.3776184  430.6054 -0.34049818    -0.3622195           NA      SPL7
+# 12 AT5G60200 -0.13385030  5.107913e-22   -0.3877858  397.7115 -0.16566286    -0.3551172           NA    DOF5.3
+# 6  AT2G22430  0.42007791  1.191427e-37    0.3242114  282.8667  0.38108896     0.2671454           NA    ATHB-6
+# 1  AT1G52150  0.00000000  7.489972e-01   -0.2822424  281.1619 -0.04939149    -0.3354909           NA   ATHB-15
+# 14 AT5G65590  0.12167810  4.984743e-33    0.3535122  253.8221  0.13395108     0.2939522           NA AT5G65590
+# 8  AT3G01470  0.00000000  3.134900e-01   -0.2254802  193.3893 -0.01969008    -0.1848806           NA    ATHB-1
+# 3  AT1G64620  0.01893602  1.611152e-02   -0.1025043  179.9023  0.09867434    -0.1231658           NA AT1G64620
+
+          #----------------------------------------------------------------------------------------
+          # 18th model: 104 TFs with >= 95% motif match within 5000 upstream, 5000 downstream of TSS
+          # same region as #15 on atac.seq; Use bigger matrix
+          #----------------------------------------------------------------------------------------
+
+tbl.atac <- data.frame(chrom=rep("Chr3", 2),
+                       start=c(20429112,20434113),
+                       end=c(20434112,20439113),
+                       stringsAsFactors=FALSE)
+tbl.tfs <- findCandidateTranscriptionFactorsByMotifInSequence(tp, tbl.atac, 95L)
+candidate.tfs <- sort(unique(tbl.tfs$orf))
+length(candidate.tfs)
+
+recipe <- list(title="WBC19",
+               type="noDNA.tfsSupplied",
+               matrix=mtx,
+               candidateTFs=candidate.tfs,
+               tfPool=getAllTranscriptionFactors(tp, "MotifDb"),
+               tfPrefilterCorrelation=0.1,
+               annotationDbFile=dbfile(org.At.tair.db),
+               orderModelByColumn="rfScore",
+               solverNames=c("lasso", "lassopv", "pearson", "randomForest", "ridge", "spearman"),
+               quiet=TRUE)
+
+builder <- NoDnaModelBuilder(genome, targetGene, recipe, quiet=TRUE)
+x18 <- build(builder)
+lapply(x18, dim)
+tbl.model.18 <- x18$model[1:10,]
+tf.symbols <- unlist(lapply(tbl.model.18$gene, function(tf) getGeneNames(tp, tf)$symbol))
+tbl.model.18$symbol <- tf.symbols
+
+#         gene   betaLasso   lassoPValue pearsonCoeff    rfScore   betaRidge spearmanCoeff bindingSites symbol
+# 30 AT3G59060  0.20660505 7.586023e-257    0.6738150 1106.31242  0.09978381     0.5077358           NA   PIF5
+# 33 AT4G14465 -0.14559575 7.720037e-103   -0.5628267  537.79490 -0.09335849    -0.3313744           NA  AHL20
+# 32 AT4G00050  0.21111517 1.790158e-129    0.5765029  451.14938  0.14417470     0.4916015           NA  UNE10
+# 38 AT4G36540  0.16916609  2.128292e-89    0.5333334  329.98386  0.12713276     0.4806764           NA   BEE2
+# 23 AT3G01220 -0.08784450  1.524911e-46   -0.5233056  273.24071 -0.08700164    -0.3849471           NA ATHB20
+# 51 AT5G62165 -0.03805766  3.058215e-24   -0.4991596  217.69778 -0.05817641    -0.3849297           NA  AGL42
+# 9  AT1G53160  0.02257309  1.136179e-12    0.3917817   92.34605  0.04437246     0.3554472           NA   SPL4
+# 50 AT5G60200 -0.02179131  5.127391e-12   -0.3877858   91.62244 -0.05630662    -0.3551172           NA DOF5.3
+# 43 AT5G18830 -0.12205317  5.265642e-17   -0.3776184   82.37603 -0.15105459    -0.3622195           NA   SPL7
+# 35 AT4G31920  0.00000000  9.739117e-01   -0.3963221   82.05983 -0.08120219    -0.3279602           NA  ARR10
+
+      #----------------------------------------------------------------------------------------
+      # 19th model: 98 TFs with >= 95% motif match within 5000 upstream, 5000 downstream of TSS
+      # same region as #15 on atac.seq; Use bigger matrix
+      #----------------------------------------------------------------------------------------
+tbl.atac <- data.frame(chrom=rep("Chr3", 2),
+                       start=c(20429112,20436288),
+                       end=c(20434112,20441288),
+                       stringsAsFactors=FALSE)
+tbl.tfs <- findCandidateTranscriptionFactorsByMotifInSequence(tp, tbl.atac, 95L)
+candidate.tfs <- sort(unique(tbl.tfs$orf))
+length(candidate.tfs)
+
+recipe <- list(title="WBC19",
+               type="noDNA.tfsSupplied",
+               matrix=mtx3,
+               candidateTFs=candidate.tfs,
+               tfPool=getAllTranscriptionFactors(tp, "MotifDb"),
+               tfPrefilterCorrelation=0.1,
+               annotationDbFile=dbfile(org.At.tair.db),
+               orderModelByColumn="rfScore",
+               solverNames=c("lasso", "lassopv", "pearson", "randomForest", "ridge", "spearman"),
+               quiet=TRUE)
+
+builder <- NoDnaModelBuilder(genome, targetGene, recipe, quiet=TRUE)
+x19 <- build(builder)
+lapply(x19, dim)
+tbl.model.19 <- x19$model[1:10,]
+tf.symbols <- unlist(lapply(tbl.model.19$gene, function(tf) getGeneNames(tp, tf)$symbol))
+tbl.model.19$symbol <- tf.symbols
+
+#         gene   betaLasso   lassoPValue pearsonCoeff    rfScore   betaRidge spearmanCoeff bindingSites symbol
+# 27 AT3G59060  0.20847974 7.586023e-257    0.6738150 1132.98732  0.10504491     0.5077358           NA   PIF5
+# 30 AT4G14465 -0.14831565 7.720037e-103   -0.5628267  527.16775 -0.09513729    -0.3313744           NA  AHL20
+# 29 AT4G00050  0.21213270 1.790158e-129    0.5765029  467.57087  0.14878185     0.4916015           NA  UNE10
+# 21 AT3G01220 -0.08679869  1.524911e-46   -0.5233056  329.26474 -0.09229795    -0.3849471           NA ATHB20
+# 34 AT4G36540  0.16911396  2.128292e-89    0.5333334  320.70080  0.12903040     0.4806764           NA   BEE2
+# 47 AT5G62165 -0.03733050  3.058215e-24   -0.4991596  185.77783 -0.06039029    -0.3849297           NA  AGL42
+# 46 AT5G60200 -0.02111709  5.127391e-12   -0.3877858   91.65985 -0.05759636    -0.3551172           NA DOF5.3
+# 39 AT5G18830 -0.12003641  5.265642e-17   -0.3776184   86.14901 -0.15167134    -0.3622195           NA   SPL7
+# 9  AT1G53160  0.02216566  1.136179e-12    0.3917817   84.55421  0.04472416     0.3554472           NA   SPL4
+# 32 AT4G31920  0.00000000  9.427982e-01   -0.3963221   73.34116 -0.07899182    -0.3279602           NA  ARR10
+
+# with smaller matrix mtx3:
+#         gene   betaLasso  lassoPValue pearsonCoeff   rfScore    betaRidge spearmanCoeff bindingSites    symbol
+# 29 AT4G17880  0.06445869 0.0008222258    0.4580876 0.9450456  0.034282571     0.4253061           NA AT4G17880
+# 7  AT1G25550  0.00000000 0.0328008880   -0.3272428 0.5391818 -0.019705100    -0.2919088           NA AT1G25550
+# 40 AT5G37020  0.10286850 0.0010999014    0.4500930 0.5314113  0.073007047     0.3855462           NA      ARF8
+# 5  AT1G22985 -0.01027799 0.0142236209   -0.3858113 0.3790130 -0.038876945    -0.3998559           NA AT1G22985
+# 37 AT5G07680  0.00000000 0.0518950825   -0.2597433 0.3328196 -0.010513774    -0.1699400           NA   ANAC080
+# 22 AT3G15270  0.00000000 0.0593857696    0.3030271 0.2860886  0.013592940     0.2473469           NA      SPL5
+# 21 AT3G15210  0.00000000 0.7331515557   -0.2229774 0.1963197 -0.007838267    -0.1080912           NA      ERF4
+# 14 AT1G74930  0.00000000 0.6960000957   -0.2764086 0.1911578 -0.004877530    -0.2787515           NA    ERF018
+# 41 AT5G43410  0.00000000 0.0281112451    0.2610044 0.1895305  0.016059188     0.3809364           NA AT5G43410
+# 32 AT4G32800  0.00000000 0.0749800426    0.2511761 0.1830661  0.018230405     0.2693397           NA AT4G32800
+
+
+
 #------------------------------------------------------------------------------------------------------------------------
 if(!interactive())
   runTests()
