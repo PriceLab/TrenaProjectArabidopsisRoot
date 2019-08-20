@@ -1,0 +1,18 @@
+Common Regulators	Regulation	Target Gene					
+TGA1	activator	AHL20					
+ATHB20	activator	AHL20					
+DOF5.3	activator	AHL20					
+MYB52	activator	AHL20					
+ATHB-1	activator	AHL20					
+ATHB-16	activator	AHL20					
+ATHB-15	activator	AHL20					
+ATHB-6	repressor	AHL20					
+WRKY60	activator	AHL20					
+WRKY48	activator	AHL20					
+ATHB13	activator	AHL20					
+GATA8	activator	AHL20					
+WRKY2	repressor	AHL20					
+							
+							
+							
+							
