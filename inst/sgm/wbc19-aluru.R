@@ -358,7 +358,7 @@ plotWBC19 <- plot((mtx[c("AT3G55130"),]), (mtx[c("AT3G59060"),]))
 new.wbc.vector <- t(wbc19.vector)
 number1 <- new.wbc.vector[(new.wbc.vector[,1] > 2),]
 number2 <- number1[(number1[,2] > 2),]
-plot(number2, labels= rownames(number2))
+plot(number2)
 highExpressionWBC19 <- t(number2)
 rownames(highExpressionWBC19)
 mtx2 <- highExpressionWBC19
@@ -1946,6 +1946,120 @@ tbl.model.36$symbol <- tf.symbols
 # 16 AT5G39660  0.00000000 9.408914e-01    0.1232301  2.434100  0.04390803     0.2660744           NA   CDF2
 # 5  AT2G46830  0.00000000 5.002095e-01    0.1257317  1.782495  0.01610316     0.2545498           NA   CCA1
 # 19 AT5G60200  0.00000000 1.777865e-01    0.3594898  1.689535  0.13931685     0.3898679           NA DOF5.3
+
+          #----------------------------------------------------------------------------------------
+          # 37th model: 63 TFs with >= 95% motif match within 2000 upstream, 500 downstream of TSS
+          # use both matrices mtx and mtx3
+          #----------------------------------------------------------------------------------------
+targetGene <- canonicalizeName(tp, "HDG1")
+tbl.atac <- data.frame(chrom=rep("Chr3", 2),
+                       start=c(22628768,22630769),
+                       end=c(22630768,22631269),
+                       stringsAsFactors=FALSE)
+tbl.tfs <- findCandidateTranscriptionFactorsByMotifInSequence(tp, tbl.atac, 95L)
+candidate.tfs <- sort(unique(tbl.tfs$orf))
+length(candidate.tfs)
+
+recipe <- list(title="HDG1",
+               type="noDNA.tfsSupplied",
+               matrix=mtx3,
+               candidateTFs=candidate.tfs,
+               tfPool=getAllTranscriptionFactors(tp, "MotifDb"),
+               tfPrefilterCorrelation=0.1,
+               annotationDbFile=dbfile(org.At.tair.db),
+               orderModelByColumn="rfScore",
+               solverNames=c("lasso", "lassopv", "pearson", "randomForest", "ridge", "spearman"),
+               quiet=TRUE)
+
+builder <- NoDnaModelBuilder(genome, targetGene, recipe, quiet=TRUE)
+x37 <- build(builder)
+lapply(x37, dim)
+tbl.model.37 <- x37$model[1:10,]
+tf.symbols <- unlist(lapply(tbl.model.37$gene, function(tf) getGeneNames(tp, tf)$symbol))
+tbl.model.37$symbol <- tf.symbols
+
+#with bigger mtx
+#         gene    betaLasso   lassoPValue pearsonCoeff   rfScore   betaRidge spearmanCoeff bindingSites    symbol
+# 15 AT4G14465 -0.154765390 2.596098e-115   -0.4856727 237.18354 -0.09040606    -0.4259938           NA     AHL20
+# 28 AT5G62165 -0.143733663  8.555141e-99   -0.4655235 194.10680 -0.10233955    -0.4206713           NA     AGL42
+# 4  AT1G53170  0.111083778  4.538903e-39    0.3885351 123.54931  0.10857248     0.3412866           NA      ERF8
+# 27 AT5G60200 -0.003436034  3.476019e-03   -0.3182049  94.32478 -0.03456264    -0.3386358           NA    DOF5.3
+# 14 AT3G16770  0.095642215  1.287627e-23    0.2962935  89.88464  0.09575802     0.3110551           NA    RAP2-3
+# 23 AT5G42630  0.000000000  4.896472e-01   -0.2929949  85.81616 -0.02404363    -0.2472149           NA       ATS
+# 2  AT1G43160 -0.038001593  1.805203e-35   -0.3635980  72.15085 -0.03897048    -0.3642711           NA    RAP2-6
+# 19 AT5G16560  0.098398516  1.032615e-20    0.2124910  70.89221  0.10234046     0.1777708           NA       KAN
+# 1  AT1G22985 -0.168688436  1.072297e-27   -0.2819869  65.52232 -0.13920117    -0.2649606           NA AT1G22985
+# 26 AT5G59780  0.000000000  9.785459e-01   -0.3170906  61.38923 -0.02360199    -0.3422669           NA     MYB59
+
+#with smaller mtx3
+#         gene   betaLasso  lassoPValue pearsonCoeff   rfScore   betaRidge spearmanCoeff bindingSites symbol
+# 2  AT1G19850 -0.15160166 0.0001122043   -0.5191075 2.7433970 -0.07520242    -0.6030732           NA   ARF5
+# 13 AT3G06740  0.04224990 0.0058084445    0.3901419 1.2922685  0.07388667     0.4125909           NA GATA15
+# 5  AT1G28370 -0.02436093 0.0025452370   -0.4350029 0.8931289 -0.02253084    -0.4381753           NA  ERF11
+# 10 AT2G33810  0.00000000 0.2602239950   -0.2489882 0.6723020 -0.01894787    -0.3287875           NA   SPL3
+# 20 AT4G14465  0.00000000 0.4723964614    0.3278602 0.6388994  0.01115103     0.3110204           NA  AHL20
+# 25 AT5G16560  0.00530587 0.0085767546    0.3717312 0.5917463  0.02276504     0.2917167           NA    KAN
+# 19 AT3G54810  0.09148248 0.0025801359    0.4166885 0.4226205  0.08816604     0.4079232           NA  GATA8
+# 7  AT1G50640  0.00000000 0.0297311200   -0.1685020 0.3406988 -0.04450800    -0.1623529           NA   ERF3
+# 15 AT3G15270  0.00000000 0.6326714126   -0.2212659 0.3184976 -0.01069675    -0.1128932           NA   SPL5
+# 16 AT3G16770  0.00000000 0.0438706191    0.2069915 0.3161507  0.02201526     0.1376711           NA RAP2-3
+
+          #----------------------------------------------------------------------------------------
+          # 38th model: 39 TFs with >= 95% motif match within 2000 upstream, 500 downstream of TSS
+          # use both matrices mtx and mtx3
+          #----------------------------------------------------------------------------------------
+targetGene <- canonicalizeName(tp, "OBP3")
+tbl.atac <- data.frame(chrom=rep("Chr3", 2),
+                       start=c(20525197,20527198),
+                       end=c(20527197,20527698),
+                       stringsAsFactors=FALSE)
+tbl.tfs <- findCandidateTranscriptionFactorsByMotifInSequence(tp, tbl.atac, 95L)
+candidate.tfs <- sort(unique(tbl.tfs$orf))
+length(candidate.tfs)
+
+recipe <- list(title="OBP3",
+               type="noDNA.tfsSupplied",
+               matrix=mtx3,
+               candidateTFs=candidate.tfs,
+               tfPool=getAllTranscriptionFactors(tp, "MotifDb"),
+               tfPrefilterCorrelation=0.1,
+               annotationDbFile=dbfile(org.At.tair.db),
+               orderModelByColumn="rfScore",
+               solverNames=c("lasso", "lassopv", "pearson", "randomForest", "ridge", "spearman"),
+               quiet=TRUE)
+
+builder <- NoDnaModelBuilder(genome, targetGene, recipe, quiet=TRUE)
+x38 <- build(builder)
+lapply(x38, dim)
+tbl.model.38 <- x38$model[1:10,]
+tf.symbols <- unlist(lapply(tbl.model.38$gene, function(tf) getGeneNames(tp, tf)$symbol))
+tbl.model.38$symbol <- tf.symbols
+
+#with bigger mtx
+#         gene   betaLasso   lassoPValue pearsonCoeff   rfScore   betaRidge spearmanCoeff bindingSites    symbol
+# 2  AT1G52150  0.30032344 7.613967e-139    0.5288124 294.84890  0.21362574    0.52041400           NA   ATHB-15
+# 20 AT5G60200  0.19500629 1.186395e-142    0.5328210 278.27108  0.15273043    0.49603968           NA    DOF5.3
+# 13 AT4G14465  0.21858158 9.676539e-138    0.5271657 245.22635  0.12879812    0.49331909           NA     AHL20
+# 8  AT2G03500  0.13145435  3.818057e-36    0.3335143  98.22692  0.11723378    0.34131853           NA AT2G03500
+# 21 AT5G62165  0.06357558  1.869604e-32    0.4095408  85.46927  0.06649715    0.42466574           NA     AGL42
+# 11 AT2G37590  0.06264759  1.633947e-13    0.3418685  70.43422  0.11443598    0.32495722           NA    DOF2.4
+# 19 AT5G42630  0.00000000  6.830392e-01    0.2720615  69.88591  0.01116839    0.29793409           NA       ATS
+# 17 AT5G16560 -0.02219210  2.446977e-05   -0.1551953  69.29002 -0.05366961   -0.08497416           NA       KAN
+# 4  AT1G64620  0.03786746  1.173939e-09    0.3421884  67.12839  0.08976062    0.33598918           NA AT1G64620
+# 12 AT3G01470  0.00000000  6.418641e-01    0.2890155  66.15996  0.04800213    0.34502592           NA    ATHB-1
+
+#with smaller mtx3
+#         gene   betaLasso  lassoPValue pearsonCoeff   rfScore   betaRidge spearmanCoeff bindingSites    symbol
+# 4  AT1G70920  0.00000000 0.0549188851   -0.3220010 2.4308873 -0.02119084   -0.29114046           NA    ATHB18
+# 16 AT5G42630  0.00000000 0.2775032985   -0.2703003 1.5977141 -0.01979709   -0.08235294           NA       ATS
+# 6  AT2G01930  0.07720251 0.0096555402    0.3393510 1.5553011  0.06560244    0.24206483           NA      BPC1
+# 3  AT1G63480 -0.08890034 0.0027604541   -0.4203422 1.4083491 -0.08789321   -0.33714286           NA AT1G63480
+# 2  AT1G52150  0.00000000 0.5393362014    0.1994989 1.2331230  0.04341727   -0.06151261           NA   ATHB-15
+# 11 AT4G17460  0.00000000 0.0360625159   -0.3557152 1.2322980 -0.04324252   -0.20364946           NA      HAT1
+# 14 AT4G37790  0.00000000 0.0431609962   -0.3080342 1.0922844 -0.10320802   -0.21286915           NA     HAT22
+# 20 AT5G65310  0.12564916 0.0005152703    0.4734606 0.9821801  0.06209034    0.14468187           NA    ATHB-5
+# 19 AT5G62940  0.00000000 0.1403350982    0.3512926 0.9386974  0.06213477    0.12297719           NA    DOF5.6
+# 7  AT2G03500  0.00000000 0.9089545184    0.1293064 0.7918994  0.01891004    0.17051621           NA AT2G03500
 #------------------------------------------------------------------------------------------------------------------------
 if(!interactive())
   runTests()
