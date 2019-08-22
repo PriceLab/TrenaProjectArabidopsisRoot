@@ -29,11 +29,13 @@ edgeData(g, tbl$Regulators, tbl$Target, "edgeType") <- tbl$Regulation
 setGraph(rcy, g)
 layout(rcy, "breadthfirst")
 layout(rcy, "cola")
-for(layout in getLayoutStrategies(rcy)){
-   print(layout)
-   layout(rcy, layout)
-   Sys.sleep(2)
-   }
+
+#for(layout in getLayoutStrategies(rcy)){
+#   print(layout)
+#   layout(rcy, layout)
+#   Sys.sleep(2)
+#   }
+
 loadStyleFile(rcy, "style.js")
 fit(rcy, 20)
 
