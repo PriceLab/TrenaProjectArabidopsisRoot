@@ -6,7 +6,7 @@ vizmap = [
       "text-halign":"center",
       "content": "data(id)",
       "border-width": "3px",
-      "background-color": "#FFFFFF",
+      "background-color": "white",
       "border-color":"black",
       "width": "80px",
       "height": "80px",
@@ -22,12 +22,24 @@ vizmap = [
        "overlay-color": "gray"
        }},
 
+   {selector:"node[expression=0]", css: {
+       "background-color": "white"
+       }},
+
+   {selector:"node[expression>0]", css: {
+       "background-color": "mapData(expression, 0, 1, white, green)"
+       }},
+
+   {selector:"node[expression<0]", css: {
+       "background-color": "mapData(expression, -1, 0, red, white)"
+       }},
+
 
    {selector:"edge", css: {
       "line-color": "black",
       'target-arrow-color': "black",
       'target-arrow-shape': 'triangle',
-      "width": "1px",
+      "width": "10px",
       'curve-style': 'bezier',
       'haystack-radius': 0.5
        }},
