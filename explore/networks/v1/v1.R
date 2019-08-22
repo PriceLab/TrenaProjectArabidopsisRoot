@@ -13,6 +13,11 @@ library(RCyjs)
 rcy <- RCyjs(title="WBC19", quiet=TRUE)
 tbl <- read.table("wbc19.regulators.root.txt", sep="\t", header=TRUE, stringsAsFactors=FALSE)[1:4,]
 tbl
+tbl.big <- read.table("wbc19.regulators.root.txt", sep="\t", header=TRUE, stringsAsFactors=FALSE)
+load("testNetwork.mtx.RData")
+mtx <- testNetwork.mtx
+wbc19Model <- load("WBC19Model.small.RData")
+rownames(tbl.model.17)
 
 
 nodes <- unique(c(tbl$Regulators, tbl$Target.Gene))
