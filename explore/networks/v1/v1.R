@@ -11,14 +11,19 @@
 library(TrenaProjectArabidopsisRoot)
 library(RCyjs)
 rcy <- RCyjs(title="WBC19", quiet=TRUE)
-tbl <- read.table("wbc19.regulators.root.txt", sep="\t", header=TRUE, stringsAsFactors=FALSE)[1:4,]
+tbl <- read.table("wbc19.regulators.root.txt", sep="\t", header=TRUE, stringsAsFactors=FALSE)[1:6,]
 tbl
 tbl.big <- read.table("wbc19.regulators.root.txt", sep="\t", header=TRUE, stringsAsFactors=FALSE)
 load("testNetwork.mtx.RData")
+load("testNetwork1.mtx.RData")
+mtx2 <- testNetwork1.mtx
 mtx <- testNetwork.mtx
 wbc19Model <- load("WBC19Model.small.RData")
 rownames(tbl.model.17)
 
+rownames(mtx2)[2:7] <- tbl.model.17$symbol
+rownames(mtx2)[1] <- "WBC19"
+rownames(mtx2)[6] <- "SCAP1"
 
 nodes <- unique(c(tbl$Regulators, tbl$Target.Gene))
 nodes
@@ -44,12 +49,13 @@ layout(rcy, "cola")
 loadStyleFile(rcy, "style.js")
 fit(rcy, 20)
 
-rownames(mtx) <- unlist(lapply(rownames(mtx), function(orf) getGeneNames(tpar, orf)$symbol))
-rownames(mtx)[4] <- "AT5G65590"
+tpar <- TrenaProjectArabidopsisRoot()
+# rownames(mtx2) <- unlist(lapply(rownames(mtx2), function(orf) getGeneNames(tpar, orf)$symbol))
+# rownames(mtx2)[6] <- "SCAP1" # symbol for "AT5G65590", however, the symbol does not show in the 
 
-setNodeAttributes(rcy, "expression", rownames(mtx), as.numeric(mtx[, 1]))
-setNodeAttributes(rcy, "expression", rownames(mtx), as.numeric(mtx[, 2]))
-setNodeAttributes(rcy, "expression", rownames(mtx), as.numeric(mtx[, 3]))
+setNodeAttributes(rcy, "expression", rownames(mtx2), as.numeric(mtx[, 1]))
+setNodeAttributes(rcy, "expression", rownames(mtx2), as.numeric(mtx[, 2]))
+setNodeAttributes(rcy, "expression", rownames(mtx2), as.numeric(mtx[, 3]))
 
 
 
