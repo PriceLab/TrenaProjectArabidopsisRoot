@@ -27,11 +27,11 @@ vizmap = [
        }},
 
    {selector:"node[expression>0]", css: {
-       "background-color": "mapData(expression, 0, 1, white, green)"
+       "background-color": "mapData(expression, 0, 5, white, green)"
        }},
 
    {selector:"node[expression<0]", css: {
-       "background-color": "mapData(expression, -1, 0, red, white)"
+       "background-color": "mapData(expression, -5, 0, red, white)"
        }},
 
 
