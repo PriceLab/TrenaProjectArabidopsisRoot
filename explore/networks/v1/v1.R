@@ -53,9 +53,9 @@ tpar <- TrenaProjectArabidopsisRoot()
 # rownames(mtx2) <- unlist(lapply(rownames(mtx2), function(orf) getGeneNames(tpar, orf)$symbol))
 # rownames(mtx2)[6] <- "SCAP1" # symbol for "AT5G65590", however, the symbol does not show in the 
 
-setNodeAttributes(rcy, "expression", rownames(mtx2), as.numeric(mtx[, 1]))
-setNodeAttributes(rcy, "expression", rownames(mtx2), as.numeric(mtx[, 2]))
-setNodeAttributes(rcy, "expression", rownames(mtx2), as.numeric(mtx[, 3]))
+setNodeAttributes(rcy, "expression", rownames(mtx2), as.numeric(mtx2[, 1]))
+setNodeAttributes(rcy, "expression", rownames(mtx2), as.numeric(mtx2[, 2]))
+setNodeAttributes(rcy, "expression", rownames(mtx2), as.numeric(mtx2[, 3]))
 
 
 
