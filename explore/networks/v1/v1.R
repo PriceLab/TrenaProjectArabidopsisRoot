@@ -13,7 +13,8 @@ library(RCyjs)
 rcy <- RCyjs(title="WBC19", quiet=TRUE)
 tbl <- read.table("wbc19.regulators.root.txt", sep="\t", header=TRUE, stringsAsFactors=FALSE)[1:6,]
 tbl
-tbl.big <- read.table("wbc19.regulators.root.txt", sep="\t", header=TRUE, stringsAsFactors=FALSE)
+tbl.big <- read.table("wbc19.regulators.root.txt", sep="\t", header=TRUE, stringsAsFactors=FALSE)[,1:3]
+tbl.big$Regulators[3] <- "SCAP1"
 load("testNetwork.mtx.RData")
 load("testNetwork1.mtx.RData")
 mtx2 <- testNetwork1.mtx
@@ -25,16 +26,16 @@ rownames(mtx2)[2:7] <- tbl.model.17$symbol
 rownames(mtx2)[1] <- "WBC19"
 rownames(mtx2)[6] <- "SCAP1"
 
-nodes <- unique(c(tbl$Regulators, tbl$Target.Gene))
+nodes <- unique(c(tbl.big$Regulators, tbl.big$Target.Gene))
 nodes
 g <- new("graphNEL", edgemode = "directed")
 edgeDataDefaults(g, attr="edgeType") <- "undefined"
 nodeDataDefaults(g, attr="expression") <- 0
 
 g <- addNode(nodes, g)
-g <- addEdge(tbl$Regulators, tbl$Target.Gene, g)
+g <- addEdge(tbl.big$Regulators, tbl.big$Target.Gene, g)
 
-edgeData(g, tbl$Regulators, tbl$Target, "edgeType") <- tbl$Regulation
+edgeData(g, tbl.big$Regulators, tbl.big$Target, "edgeType") <- tbl.big$Regulation
 
 setGraph(rcy, g)
 layout(rcy, "breadthfirst")
@@ -58,6 +59,9 @@ setNodeAttributes(rcy, "expression", rownames(mtx2), as.numeric(mtx2[, 2]))
 setNodeAttributes(rcy, "expression", rownames(mtx2), as.numeric(mtx2[, 3]))
 
 
+get.all.gene.names.for.expression <- getGeneNames(tp, unlist(tbl.big$Regulators))$orf
+mtx.expression.for.model <- mtx3[get.all.gene.names.for.expression, 1:3]
+rownames(mtx.expression.for.model) <- unlist(lapply(rownames(mtx.expression.for.model), function(orf) getGeneNames(tpar, orf)$symbol))
 
 
 
