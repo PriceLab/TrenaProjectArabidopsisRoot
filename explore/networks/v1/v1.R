@@ -54,15 +54,19 @@ tpar <- TrenaProjectArabidopsisRoot()
 # rownames(mtx2) <- unlist(lapply(rownames(mtx2), function(orf) getGeneNames(tpar, orf)$symbol))
 # rownames(mtx2)[6] <- "SCAP1" # symbol for "AT5G65590", however, the symbol does not show in the 
 
-setNodeAttributes(rcy, "expression", rownames(mtx2), as.numeric(mtx2[, 1]))
-setNodeAttributes(rcy, "expression", rownames(mtx2), as.numeric(mtx2[, 2]))
-setNodeAttributes(rcy, "expression", rownames(mtx2), as.numeric(mtx2[, 3]))
+setNodeAttributes(rcy, "expression", rownames(mtx.expression.for.model), as.numeric(mtx.expression.for.model[, 1]))
+Sys.sleep(3)
+setNodeAttributes(rcy, "expression", rownames(mtx.expression.for.model), as.numeric(mtx.expression.for.model[, 2]))
+Sys.sleep(3)
+setNodeAttributes(rcy, "expression", rownames(mtx.expression.for.model), as.numeric(mtx.expression.for.model[, 3]))
 
 
 get.all.gene.names.for.expression <- getGeneNames(tp, unlist(tbl.big$Regulators))$orf
 mtx.expression.for.model <- mtx3[get.all.gene.names.for.expression, 1:3]
 rownames(mtx.expression.for.model) <- unlist(lapply(rownames(mtx.expression.for.model), function(orf) getGeneNames(tpar, orf)$symbol))
 
+# saveLayout(rcy, "preferredLayout")
+# restoreLayout(rcy, "preferredLayout")
 
 
 
