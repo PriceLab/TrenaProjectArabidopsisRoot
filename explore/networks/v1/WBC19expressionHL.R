@@ -31,18 +31,15 @@ number4 <- number3[(number3[,2] < -2),]
 plot(number4, main="low WBC19 Expression in Roots")
 lowExpressionWBC19 <- t(number4)
 rownames(lowExpressionWBC19)
-[1] "AT3G55130" "AT3G59060"
 mtx4 <- lowExpressionWBC19
 mtx4.colnames <- colnames(mtx4)
 mtx4 <-  mtx[,mtx4.colnames]
 length(mtx4)
-[1] 120
 ordered.number4<- number4[order(number4[,1], number4[,2], decreasing=FALSE),]
 # allows you to view sample names with lowest expression first
 ordered.number4.50 <- ordered.number4[1:50,]
 evenLowerExpressionWBC19 <- t(ordered.number4.50)
 rownames(evenLowerExpressionWBC19)
-[1] "AT3G55130" "AT3G59060"
 mtx5.colnames <- colnames(evenLowerExpressionWBC19)
 mtx5 <- mtx[,mtx5.colnames]
 highAndLowMtx <- cbind(mtx3, mtx5)
