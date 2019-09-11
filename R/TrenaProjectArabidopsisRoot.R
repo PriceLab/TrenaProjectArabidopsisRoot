@@ -1,9 +1,9 @@
 #----------------------------------------------------------------------------------------------------
 #' @import methods
+#' @import trena
 #' @import TrenaProject
 #' @importMethodsFrom TrenaProject getAllTranscriptionFactors
 #' @importFrom trena MotifMatcher
-#' @importMethodsFrom trena findMatchesByChromosomalRegion, MotifMatcher
 #' @importFrom AnnotationDbi select
 #' @import org.At.tair.db
 #'
