@@ -29,8 +29,7 @@ g <- addEdge(tbl.big$Regulators, tbl.big$Target.Gene, g)
 edgeData(g, tbl.big$Regulators, tbl.big$Target, "edgeType") <- tbl.big$Regulation
 
 setGraph(rcy, g)
-layout(rcy, "breadthfirst")
-# layout(rcy, "cola")
+layout(rcy, "cola")
 
 #for(layout in getLayoutStrategies(rcy)){
 #   print(layout)
@@ -38,8 +37,9 @@ layout(rcy, "breadthfirst")
 #   Sys.sleep(2)
 #   }
 
-# loadStyleFile(rcy, "style.js")
+loadStyleFile(rcy, "style.js")
 fit(rcy, 20)
+layout(rcy, "breadthfirst")
 
 tpar <- TrenaProjectArabidopsisRoot()
 get.all.gene.names.for.expression <- getGeneNames(tp, unlist(tbl.big$Regulators))$orf
