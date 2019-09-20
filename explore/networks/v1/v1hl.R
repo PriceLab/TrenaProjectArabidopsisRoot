@@ -30,7 +30,7 @@ edgeData(g, tbl.big$Regulators, tbl.big$Target, "edgeType") <- tbl.big$Regulatio
 
 setGraph(rcy, g)
 layout(rcy, "breadthfirst")
-layout(rcy, "cola")
+# layout(rcy, "cola")
 
 #for(layout in getLayoutStrategies(rcy)){
 #   print(layout)
@@ -38,7 +38,7 @@ layout(rcy, "cola")
 #   Sys.sleep(2)
 #   }
 
-loadStyleFile(rcy, "style.js")
+# loadStyleFile(rcy, "style.js")
 fit(rcy, 20)
 
 tpar <- TrenaProjectArabidopsisRoot()
